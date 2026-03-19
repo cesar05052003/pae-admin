@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Municipio {
+  id              Int               @id @default(autoincrement())
+  nombre          String            @unique
+  instituciones   Institucion[]
+  actas           Acta[]
+  planes          PlanPedagogico[]
+  anotaciones     Anotacion[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Institucion {
+  id              Int               @id @default(autoincrement())
+  nombre          String
+  municipioId     Int
+  municipio       Municipio         @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  actas           Acta[]
+  planes          PlanPedagogico[]
+  anotaciones     Anotacion[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([nombre, municipioId])
+}
+
+model Acta {
+  id              Int               @id @default(autoincrement())
+  fecha           DateTime          @default(now())
+  descripcion     String?
+  archivoUrl      String?
+  municipioId     Int
+  institucionId   Int
+  municipio       Municipio         @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  institucion     Institucion       @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  anotaciones     Anotacion[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model PlanPedagogico {
+  id              Int               @id @default(autoincrement())
+  nombre          String
+  descripcion     String?
+  archivoUrl      String?
+  municipioId     Int
+  institucionId   Int
+  municipio       Municipio         @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  institucion     Institucion       @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  anotaciones     Anotacion[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Anotacion {
+  id              Int               @id @default(autoincrement())
+  titulo          String
+  contenido       String
+  municipioId     Int?
+  institucionId   Int?
+  actaId          Int?
+  planId          Int?
+  
+  municipio       Municipio?        @relation(fields: [municipioId], references: [id], onDelete: SetNull)
+  institucion     Institucion?      @relation(fields: [institucionId], references: [id], onDelete: SetNull)
+  acta            Acta?             @relation(fields: [actaId], references: [id], onDelete: SetNull)
+  plan            PlanPedagogico?   @relation(fields: [planId], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}

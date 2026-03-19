@@ -1,0 +1,7 @@
+.title { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--primary-color); }
+.statsGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+.statCard { text-align: center; padding: 2rem; }
+.statCard h3 { font-size: 1rem; color: var(--text-secondary); font-weight: 500; margin-bottom: 0.5rem; }
+.statValue { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); }
+.chartContainer { padding: 2rem; }
+.chartContainer h2 { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
