@@ -14,6 +14,14 @@ export async function POST(request: Request) {
         errorCount++;
         continue;
       }
+
+      // Ensure the institution belongs to the expected municipality.
+      const institución = await prisma.institucion.findUnique({ where: { id: Number(item.institucionId) } });
+      if (!institución || institución.municipioId !== Number(item.municipioId)) {
+        errorCount++;
+        continue;
+      }
+
       try {
         const nameStr = item.nombre ? String(item.nombre).trim() : 'Plan Pedagógico';
         const descStr = item.descripcion ? String(item.descripcion).trim() : null;

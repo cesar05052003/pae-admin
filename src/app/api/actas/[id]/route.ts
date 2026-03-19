@@ -21,13 +21,26 @@ export async function PUT(request: Request, props: RouteParams) {
   const { id } = await props.params;
   try {
     const json = await request.json();
+    const municipioId = json.municipioId ? Number(json.municipioId) : undefined;
+    const institucionId = json.institucionId ? Number(json.institucionId) : undefined;
+
+    if (municipioId && institucionId) {
+      const institucion = await prisma.institucion.findUnique({ where: { id: institucionId } });
+      if (!institucion) {
+        return NextResponse.json({ error: 'Institución no encontrada' }, { status: 404 });
+      }
+      if (institucion.municipioId !== municipioId) {
+        return NextResponse.json({ error: 'El municipio no coincide con la institución' }, { status: 400 });
+      }
+    }
+
     const acta = await prisma.acta.update({
       where: { id: Number(id) },
       data: { 
         descripcion: json.descripcion,
         archivoUrl: json.archivoUrl,
-        municipioId: json.municipioId ? Number(json.municipioId) : undefined,
-        institucionId: json.institucionId ? Number(json.institucionId) : undefined
+        municipioId,
+        institucionId
       },
       include: { municipio: true, institucion: true }
     });

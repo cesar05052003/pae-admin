@@ -18,6 +18,7 @@ export default function PlanesMunicipiosPage() {
   const [editingMuni, setEditingMuni] = useState<Municipio | null>(null);
   const [muniNombre, setMuniNombre] = useState('');
   const [saving, setSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
   const fetchMunicipios = () => {
@@ -100,6 +101,8 @@ export default function PlanesMunicipiosPage() {
     setIsMuniModalOpen(true);
   };
 
+  const filteredMunicipios = municipios.filter(m => m.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <div className="container" style={{ padding: 0 }}>
       <div style={{ marginBottom: '1rem' }}>
@@ -107,7 +110,14 @@ export default function PlanesMunicipiosPage() {
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Planes: Seleccionar Municipio</h1>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            className="input-field"
+            placeholder="Buscar municipio..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ minWidth: '220px', maxWidth: '320px' }}
+          />
           <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel Global (Planes)</button>
           <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateMuni}>+ Nuevo Municipio</button>
           <button className="btn btn-primary" onClick={() => router.push('/estadisticas/planes')}>Ver Estadísticas</button>
@@ -116,7 +126,7 @@ export default function PlanesMunicipiosPage() {
       
       {loading ? <p>Cargando municipios...</p> : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-          {municipios.map((m, idx) => (
+          {filteredMunicipios.map((m, idx) => (
             <Link key={m.id} href={`/planes/${m.id}`} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.5rem', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
               <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>
                 {String(idx + 1).padStart(2, '0')}
@@ -128,7 +138,9 @@ export default function PlanesMunicipiosPage() {
               </div>
             </Link>
           ))}
-          {municipios.length === 0 && <p>No hay municipios registrados.</p>}
+          {filteredMunicipios.length === 0 && (
+            <p>{searchTerm ? 'No se encontraron municipios.' : 'No hay municipios registrados.'}</p>
+          )}
         </div>
       )}
 

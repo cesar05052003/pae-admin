@@ -11,6 +11,7 @@ export default function InstitucionesPage() {
   const [municipios, setMunicipios] = useState<Municipio[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterMunicipio, setFilterMunicipio] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -33,6 +34,8 @@ export default function InstitucionesPage() {
   };
 
   useEffect(() => { fetchData(); }, [filterMunicipio]);
+
+  const filteredInstituciones = instituciones.filter(i => i.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,9 +102,16 @@ export default function InstitucionesPage() {
 
   return (
     <div className="container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--primary-color)' }}>Instituciones</h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h1 style={{ fontSize: '2rem', color: 'var(--primary-color)' }}>Instituciones</h1>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <input
+              className="input-field"
+              placeholder="Buscar institución..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ minWidth: '220px', maxWidth: '320px' }}
+            />
           <select className="input-field" style={{ width: '200px' }} value={filterMunicipio} onChange={e => setFilterMunicipio(e.target.value)}>
             <option value="">Todos los Municipios</option>
             {municipios.map(m => <option key={m.id} value={m.id}>{m.nombre}</option>)}
@@ -123,7 +133,7 @@ export default function InstitucionesPage() {
               </tr>
             </thead>
             <tbody>
-              {instituciones.map(i => (
+              {filteredInstituciones.map(i => (
                 <tr key={i.id}>
                   <td>{i.id}</td>
                   <td>{i.nombre}</td>

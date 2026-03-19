@@ -35,6 +35,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
   const [editingInst, setEditingInst] = useState<InstitucionWithCount | null>(null);
   const [instNombre, setInstNombre] = useState('');
   const [saving, setSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchData = () => {
     setLoading(true);
@@ -87,6 +88,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
   };
 
   const maxActas = Math.max(...instituciones.map(i => i._count?.actas || 0), 1);
+  const filteredInstituciones = instituciones.filter(i => i.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="container" style={{ padding: 0 }}>
@@ -95,12 +97,21 @@ export default function ActasInstitucionesPage(props: RouteParams) {
           <Link href="/actas" className="btn" style={{ background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem' }}>← Regresar</Link>
           <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Instituciones en {municipioNombre}</h1>
         </div>
-        <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateInst}>+ Nueva Institución</button>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            className="input-field"
+            placeholder="Buscar institución..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ minWidth: '220px', maxWidth: '320px' }}
+          />
+          <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateInst}>+ Nueva Institución</button>
+        </div>
       </div>
       
       {loading ? <p>Cargando instituciones...</p> : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          {instituciones.map((i, idx) => (
+          {filteredInstituciones.map((i, idx) => (
             <Link key={i.id} href={`/actas/${municipioId}/${i.id}`} className="glass-panel" style={{ display: 'block', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
               <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>
                 {String(idx + 1).padStart(2, '0')}

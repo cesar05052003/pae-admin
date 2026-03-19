@@ -14,6 +14,7 @@ export default function MunicipioInstitucionesPage(props: RouteParams) {
   const [instituciones, setInstituciones] = useState<Institucion[]>([]);
   const [municipioNombre, setMunicipioNombre] = useState('');
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -69,6 +70,8 @@ export default function MunicipioInstitucionesPage(props: RouteParams) {
     fetchData();
   };
 
+  const filteredInstituciones = instituciones.filter(i => i.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -103,7 +106,14 @@ export default function MunicipioInstitucionesPage(props: RouteParams) {
           <Link href="/municipios" className="btn" style={{ background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem' }}>← Regresar</Link>
           <h1 style={{ fontSize: '2rem', color: 'var(--primary-color)' }}>Instituciones en {municipioNombre}</h1>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            className="input-field"
+            placeholder="Buscar institución..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ minWidth: '220px', maxWidth: '320px' }}
+          />
           <button className="btn" style={{ background: '#e2e8f0', marginRight: '1rem' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel</button>
           <button className="btn btn-primary" onClick={openCreate}>+ Nueva Inst.</button>
         </div>
@@ -120,7 +130,7 @@ export default function MunicipioInstitucionesPage(props: RouteParams) {
               </tr>
             </thead>
             <tbody>
-              {instituciones.map((i, idx) => (
+              {filteredInstituciones.map((i, idx) => (
                 <tr key={i.id}>
                   <td>{String(idx + 1).padStart(2, '0')}</td>
                   <td>{i.nombre}</td>

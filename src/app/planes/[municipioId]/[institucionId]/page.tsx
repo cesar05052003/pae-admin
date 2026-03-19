@@ -34,6 +34,7 @@ export default function PlanesFinalPage(props: RouteParams) {
   const [formDesc, setFormDesc] = useState('');
   const [formFile, setFormFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
@@ -47,6 +48,15 @@ export default function PlanesFinalPage(props: RouteParams) {
   };
 
   useEffect(() => { fetchData(); }, [municipioId, institucionId]);
+
+  const filteredPlanes = planes.filter(p => {
+    const search = searchTerm.trim().toLowerCase();
+    if (!search) return true;
+    return (
+      p.nombre.toLowerCase().includes(search) ||
+      (p.descripcion || '').toLowerCase().includes(search)
+    );
+  });
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +119,14 @@ export default function PlanesFinalPage(props: RouteParams) {
           <Link href={`/planes/${municipioId}`} className="btn" style={{ background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem' }}>← Regresar</Link>
           <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Planes: {instNombre}</h1>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            className="input-field"
+            placeholder="Buscar plan..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ minWidth: '220px', maxWidth: '320px' }}
+          />
           <button className="btn" style={{ background: '#e2e8f0', marginRight: '1rem' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel</button>
           <button className="btn btn-primary" onClick={openCreate}>+ Registrar Plan</button>
         </div>
@@ -128,7 +145,7 @@ export default function PlanesFinalPage(props: RouteParams) {
               </tr>
             </thead>
             <tbody>
-              {planes.map(p => (
+              {filteredPlanes.map(p => (
                 <tr key={p.id}>
                   <td>{new Date(p.createdAt).toLocaleDateString()}</td>
                   <td>{p.nombre}</td>
@@ -140,7 +157,13 @@ export default function PlanesFinalPage(props: RouteParams) {
                   </td>
                 </tr>
               ))}
-              {planes.length === 0 && <tr><td colSpan={5} style={{textAlign:'center'}}>No hay planes registrados para esta institución.</td></tr>}
+              {filteredPlanes.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{textAlign:'center'}}>
+                    {searchTerm ? 'No se encontraron planes.' : 'No hay planes registrados para esta institución.'}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
