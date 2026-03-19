@@ -62,26 +62,59 @@ export async function POST(request: Request) {
             }
           }
 
-          await prisma.acta.create({
-            data: {
-              municipioId: municipio.id,
-              institucionId: institucion.id,
-              descripcion: descripcion ? String(descripcion) : null,
-              ...(convertedDate && !isNaN(convertedDate.getTime()) ? { fecha: convertedDate } : {})
+          const descStr = descripcion ? String(descripcion).trim() : null;
+          
+          // Only create if there's content or a date
+          if (descStr || convertedDate) {
+            // Duplicate check
+            const existing = await prisma.acta.findFirst({
+              where: {
+                institucionId: institucion.id,
+                descripcion: descStr,
+                ...(convertedDate && !isNaN(convertedDate.getTime()) ? { fecha: convertedDate } : {})
+              }
+            });
+
+            if (!existing) {
+              await prisma.acta.create({
+                data: {
+                  municipioId: municipio.id,
+                  institucionId: institucion.id,
+                  descripcion: descStr,
+                  ...(convertedDate && !isNaN(convertedDate.getTime()) ? { fecha: convertedDate } : {})
+                }
+              });
+              countRegistros++;
             }
-          });
-          countRegistros++;
+          }
         } else if (mode === 'planes') {
           const nombrePlan = getVal(['nombre', 'nombreplan', 'titulo']);
-          await prisma.planPedagogico.create({
-            data: {
-              municipioId: municipio.id,
-              institucionId: institucion.id,
-              nombre: nombrePlan ? String(nombrePlan) : 'Plan Pedagógico',
-              descripcion: descripcion ? String(descripcion) : null
+          const nameStr = nombrePlan ? String(nombrePlan).trim() : null;
+          const descStr = descripcion ? String(descripcion).trim() : null;
+
+          // Only create if there's content
+          if (nameStr || descStr) {
+            // Duplicate check
+            const existing = await prisma.planPedagogico.findFirst({
+              where: {
+                institucionId: institucion.id,
+                nombre: nameStr || 'Plan Pedagógico',
+                descripcion: descStr
+              }
+            });
+
+            if (!existing) {
+              await prisma.planPedagogico.create({
+                data: {
+                  municipioId: municipio.id,
+                  institucionId: institucion.id,
+                  nombre: nameStr || 'Plan Pedagógico',
+                  descripcion: descStr
+                }
+              });
+              countRegistros++;
             }
-          });
-          countRegistros++;
+          }
         }
 
       } catch (e) {

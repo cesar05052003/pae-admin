@@ -15,15 +15,29 @@ export async function POST(request: Request) {
         continue;
       }
       try {
-        await prisma.planPedagogico.create({
-          data: {
-             nombre: item.nombre,
-             descripcion: item.descripcion || null,
-             municipioId: item.municipioId,
-             institucionId: item.institucionId
+        const nameStr = item.nombre ? String(item.nombre).trim() : 'Plan Pedagógico';
+        const descStr = item.descripcion ? String(item.descripcion).trim() : null;
+
+        // Duplicate check
+        const existing = await prisma.planPedagogico.findFirst({
+          where: {
+            institucionId: item.institucionId,
+            nombre: nameStr,
+            descripcion: descStr
           }
         });
-        createdCount++;
+
+        if (!existing) {
+          await prisma.planPedagogico.create({
+            data: {
+              nombre: nameStr,
+              descripcion: descStr,
+              municipioId: item.municipioId,
+              institucionId: item.institucionId
+            }
+          });
+          createdCount++;
+        }
       } catch (e) {
         errorCount++;
       }

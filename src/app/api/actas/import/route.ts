@@ -15,15 +15,29 @@ export async function POST(request: Request) {
         continue;
       }
       try {
-        await prisma.acta.create({
-          data: {
-             descripcion: item.descripcion || null,
-             municipioId: item.municipioId,
-             institucionId: item.institucionId,
-             ...(item.fecha ? { fecha: new Date(item.fecha) } : {})
+        const descStr = item.descripcion ? String(item.descripcion).trim() : null;
+        const dateObj = item.fecha ? new Date(item.fecha) : undefined;
+
+        // Duplicate check
+        const existing = await prisma.acta.findFirst({
+          where: {
+            institucionId: item.institucionId,
+            descripcion: descStr,
+            ...(dateObj && !isNaN(dateObj.getTime()) ? { fecha: dateObj } : {})
           }
         });
-        createdCount++;
+
+        if (!existing) {
+          await prisma.acta.create({
+            data: {
+              descripcion: descStr,
+              municipioId: item.municipioId,
+              institucionId: item.institucionId,
+              ...(dateObj && !isNaN(dateObj.getTime()) ? { fecha: dateObj } : {})
+            }
+          });
+          createdCount++;
+        }
       } catch (e) {
         errorCount++;
       }
