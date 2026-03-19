@@ -43,7 +43,8 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
       setMunicipioNombre(data.nombre);
     });
     fetch(`/api/instituciones?municipioId=${municipioId}`).then(res => res.json()).then(data => {
-      setInstituciones(data);
+      // API can return an error object when the query is invalid; ensure we always set an array.
+      setInstituciones(Array.isArray(data) ? data : []);
       setLoading(false);
     });
   };
