@@ -19,6 +19,7 @@ export default function InstitucionesPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formNombre, setFormNombre] = useState('');
   const [formMunicipioId, setFormMunicipioId] = useState('');
+  const [formError, setFormError] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
@@ -39,23 +40,39 @@ export default function InstitucionesPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
+    setSaving(true);
+
     const url = editingId ? `/api/instituciones/${editingId}` : '/api/instituciones';
     const method = editingId ? 'PUT' : 'POST';
-    
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: formNombre, municipioId: formMunicipioId })
-    });
-    
-    setIsModalOpen(false);
-    fetchData();
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: formNombre, municipioId: formMunicipioId })
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        setFormError(json?.error || 'Error al guardar institución');
+        return;
+      }
+
+      setIsModalOpen(false);
+      fetchData();
+    } catch (err) {
+      setFormError('Error de red. Intenta nuevamente.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const openCreate = () => {
     setEditingId(null);
     setFormNombre('');
-    setFormMunicipioId(filterMunicipio || '');
+    setFormError('');
+    setFormMunicipioId(filterMunicipio || (municipios[0]?.id ? String(municipios[0].id) : ''));
     setIsModalOpen(true);
   };
 
@@ -163,9 +180,12 @@ export default function InstitucionesPage() {
               {municipios.map(m => <option key={m.id} value={m.id}>{m.nombre}</option>)}
             </select>
           </div>
+          {formError && (
+            <div style={{ color: '#b91c1c', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{formError}</div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
             <button type="button" className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsModalOpen(false)}>Cancelar</button>
-            <button type="submit" className="btn btn-primary">Guardar</button>
+            <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Guardando...' : 'Guardar'}</button>
           </div>
         </form>
       </Modal>
