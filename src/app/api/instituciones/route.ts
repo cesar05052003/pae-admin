@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
+import { Prisma } from '@prisma/client';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const municipioId = searchParams.get('municipioId');
@@ -20,6 +22,36 @@ export async function GET(request: Request) {
 
     return NextResponse.json(instituciones);
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching institutions' }, { status: 500 });
+    console.error('Error fetching instituciones:', error);
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return NextResponse.json({ error: `Error fetching institutions: ${message}` }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const json = await request.json();
+    const nombre = String(json.nombre || '').trim();
+    const municipioId = Number(json.municipioId);
+
+    if (!nombre || !municipioId) {
+      return NextResponse.json({ error: 'Nombre y municipio son requeridos' }, { status: 400 });
+    }
+
+    const institucion = await prisma.institucion.create({
+      data: {
+        nombre,
+        municipioId,
+      },
+    });
+
+    return NextResponse.json(institucion, { status: 201 });
+  } catch (error) {
+    console.error('Error creating institucion:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      return NextResponse.json({ error: 'Ya existe una institución con ese nombre en el municipio' }, { status: 409 });
+    }
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return NextResponse.json({ error: `Error al crear institución: ${message}` }, { status: 500 });
   }
 }
