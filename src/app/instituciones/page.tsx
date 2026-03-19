@@ -20,6 +20,7 @@ export default function InstitucionesPage() {
   const [formNombre, setFormNombre] = useState('');
   const [formMunicipioId, setFormMunicipioId] = useState('');
   const [formError, setFormError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
