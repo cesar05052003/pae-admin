@@ -15,9 +15,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <div className="app-container" style={{flexDirection: 'column'}}>
+        <div className="app-container" style={{ flexDirection: 'column' }}>
           <header style={{ padding: '1rem 2rem', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid var(--card-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-            <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-color)', textDecoration: 'none' }}>PAE Admin</Link>
+            <Link href="/" className="header-brand">
+              <img src="/logo.svg" alt="Gobernación de Córdoba" className="app-logo" />
+            </Link>
             <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
               <Link href="/anotaciones" style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>Anotaciones</Link>
             </nav>
