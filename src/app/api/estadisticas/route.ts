@@ -5,15 +5,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const [muniCount, instCount, actaCount, planesCount, instConActas, instConPlanes, instRurales, instUrbanas] = await Promise.all([
+    const [muniCount, instCount, actaCount, planesCount, instConActas, instConPlanes] = await Promise.all([
       prisma.municipio.count(),
       prisma.institucion.count(),
       prisma.acta.count(),
       prisma.planPedagogico.count(),
       prisma.institucion.count({ where: { actas: { some: {} } } }),
-      prisma.institucion.count({ where: { planes: { some: {} } } }),
-      prisma.institucion.count({ where: { tipoInstitucion: 'RURAL' } }),
-      prisma.institucion.count({ where: { tipoInstitucion: 'URBANA' } })
+      prisma.institucion.count({ where: { planes: { some: {} } } })
     ]);
 
     const municipios = await prisma.municipio.findMany({
@@ -39,8 +37,6 @@ export async function GET() {
         planes: planesCount,
         coberturaActas: instCount > 0 ? Math.round((instConActas / instCount) * 100) : 0,
         coberturaPlanes: instCount > 0 ? Math.round((instConPlanes / instCount) * 100) : 0,
-        institucionesRurales: instRurales,
-        institucionesUrbanas: instUrbanas,
       },
       municipiosData
     });

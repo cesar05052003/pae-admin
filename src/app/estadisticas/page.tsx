@@ -10,8 +10,6 @@ type Totales = {
   planes: number;
   coberturaActas: number;
   coberturaPlanes: number;
-  institucionesRurales: number;
-  institucionesUrbanas: number;
 };
 
 type MunicipioData = {
@@ -59,19 +57,6 @@ export default function EstadisticasDashboard() {
         <div className={`glass-panel ${styles.statCard}`}>
           <h3>Planes Pedagógicos</h3>
           <p className={styles.statValue}>{totales?.planes}</p>
-        </div>
-        <div className={`glass-panel ${styles.statCard}`}>
-          <h3>Instituciones</h3>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.25rem' }}>Rurales</p>
-              <p className={styles.statValue}>{totales?.institucionesRurales}</p>
-            </div>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.25rem' }}>Urbanas</p>
-              <p className={styles.statValue}>{totales?.institucionesUrbanas}</p>
-            </div>
-          </div>
         </div>
       </div>
 
