@@ -33,15 +33,21 @@ export async function POST(request: Request) {
     const json = await request.json();
     const nombre = String(json.nombre || '').trim();
     const municipioId = Number(json.municipioId);
+    const tipoInstitucion = json.tipoInstitucion || 'URBANA';
 
     if (!nombre || !municipioId) {
       return NextResponse.json({ error: 'Nombre y municipio son requeridos' }, { status: 400 });
+    }
+
+    if (!['RURAL', 'URBANA'].includes(tipoInstitucion)) {
+      return NextResponse.json({ error: 'Tipo de institución debe ser RURAL o URBANA' }, { status: 400 });
     }
 
     const institucion = await prisma.institucion.create({
       data: {
         nombre,
         municipioId,
+        tipoInstitucion,
       },
     });
 

@@ -10,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TipoInstitucion {
+  RURAL
+  URBANA
+}
+
 model Municipio {
   id              Int               @id @default(autoincrement())
   nombre          String            @unique
@@ -25,6 +30,7 @@ model Institucion {
   id              Int               @id @default(autoincrement())
   nombre          String
   municipioId     Int
+  tipoInstitucion TipoInstitucion   @default(URBANA)
   municipio       Municipio         @relation(fields: [municipioId], references: [id], onDelete: Cascade)
   actas           Acta[]
   planes          PlanPedagogico[]

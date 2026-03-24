@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Modal from '@/components/Modal';
 import * as XLSX from 'xlsx';
 
-type Institucion = { id: number; nombre: string; municipioId: number; municipio?: { nombre: string } };
+type Institucion = { id: number; nombre: string; municipioId: number; tipoInstitucion?: string; municipio?: { nombre: string } };
 type Municipio = { id: number; nombre: string };
 
 export default function InstitucionesPage() {
@@ -19,6 +19,7 @@ export default function InstitucionesPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formNombre, setFormNombre] = useState('');
   const [formMunicipioId, setFormMunicipioId] = useState('');
+  const [formTipoInstitucion, setFormTipoInstitucion] = useState('URBANA');
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -51,7 +52,7 @@ export default function InstitucionesPage() {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: formNombre, municipioId: formMunicipioId })
+        body: JSON.stringify({ nombre: formNombre, municipioId: formMunicipioId, tipoInstitucion: formTipoInstitucion })
       });
 
       const json = await res.json();
@@ -72,6 +73,7 @@ export default function InstitucionesPage() {
   const openCreate = () => {
     setEditingId(null);
     setFormNombre('');
+    setFormTipoInstitucion('URBANA');
     setFormError('');
     setFormMunicipioId(filterMunicipio || (municipios[0]?.id ? String(municipios[0].id) : ''));
     setIsModalOpen(true);
@@ -81,6 +83,7 @@ export default function InstitucionesPage() {
     setEditingId(i.id);
     setFormNombre(i.nombre);
     setFormMunicipioId(String(i.municipioId));
+    setFormTipoInstitucion(i.tipoInstitucion || 'URBANA');
     setIsModalOpen(true);
   };
 
@@ -104,7 +107,8 @@ export default function InstitucionesPage() {
       
       const payload = data.map(item => ({
         nombre: item.nombre || item.Nombre,
-        municipioId: Number(item.municipioId || item.MunicipioId)
+        municipioId: Number(item.municipioId || item.MunicipioId),
+        tipoInstitucion: (item.tipoInstitucion || item.TipoInstitucion || 'URBANA').toUpperCase()
       })).filter(i => i.nombre && i.municipioId);
 
       await fetch('/api/instituciones/import', {
@@ -181,6 +185,13 @@ export default function InstitucionesPage() {
               {municipios.map(m => <option key={m.id} value={m.id}>{m.nombre}</option>)}
             </select>
           </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Tipo de Institución</label>
+            <select required className="input-field" value={formTipoInstitucion} onChange={e => setFormTipoInstitucion(e.target.value)}>
+              <option value="RURAL">Rural</option>
+              <option value="URBANA">Urbana</option>
+            </select>
+          </div>
           {formError && (
             <div style={{ color: '#b91c1c', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{formError}</div>
           )}
@@ -193,7 +204,7 @@ export default function InstitucionesPage() {
 
       <Modal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} title="Importar Instituciones">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <p>Sube un archivo Excel (.xlsx, .csv) con las columnas <b>nombre</b> y <b>municipioId</b>.</p>
+          <p>Sube un archivo Excel (.xlsx, .csv) con las columnas <b>nombre</b>, <b>municipioId</b> y <b>tipoInstitucion</b> (valores: RURAL o URBANA).</p>
           <input type="file" accept=".xlsx, .xls, .csv" className="input-field" onChange={handleFileUpload} />
         </div>
       </Modal>

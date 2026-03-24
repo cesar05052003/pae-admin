@@ -26,13 +26,20 @@ export async function PUT(request: Request, props: RouteParams) {
     const json = await request.json();
     const nombre = String(json.nombre || '').trim();
     const municipioId = json.municipioId ? Number(json.municipioId) : undefined;
+    const tipoInstitucion = json.tipoInstitucion || undefined;
+
+    if (tipoInstitucion && !['RURAL', 'URBANA'].includes(tipoInstitucion)) {
+      return NextResponse.json({ error: 'Tipo de institución debe ser RURAL o URBANA' }, { status: 400 });
+    }
+
+    const updateData: any = { nombre, municipioId };
+    if (tipoInstitucion) {
+      updateData.tipoInstitucion = tipoInstitucion;
+    }
 
     const institucion = await prisma.institucion.update({
       where: { id: Number(id) },
-      data: { 
-        nombre,
-        municipioId
-      },
+      data: updateData,
       include: { municipio: true }
     });
     return NextResponse.json(institucion);
