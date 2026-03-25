@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { TipoMunicipio } from '@prisma/client';
 
 // Next.js App Router dynamic route params
 type RouteParams = { params: Promise<{ id: string }> };
@@ -22,9 +23,15 @@ export async function PUT(request: Request, props: RouteParams) {
   const { id } = await props.params;
   try {
     const json = await request.json();
+    const dataToUpdate: { nombre: string; tipoUso?: TipoMunicipio } = {
+      nombre: json.nombre,
+    };
+    if (json.tipoUso) {
+      dataToUpdate.tipoUso = json.tipoUso;
+    }
     const municipio = await prisma.municipio.update({
       where: { id: Number(id) },
-      data: { nombre: json.nombre },
+      data: dataToUpdate,
     });
     return NextResponse.json(municipio);
   } catch (error) {

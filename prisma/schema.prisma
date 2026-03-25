@@ -15,9 +15,16 @@ enum TipoInstitucion {
   URBANA
 }
 
+enum TipoMunicipio {
+  ACTAS
+  PLANES
+  AMBOS
+}
+
 model Municipio {
   id              Int               @id @default(autoincrement())
   nombre          String            @unique
+  tipoUso         TipoMunicipio     @default(AMBOS)
   instituciones   Institucion[]
   actas           Acta[]
   planes          PlanPedagogico[]

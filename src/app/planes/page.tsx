@@ -1,18 +1,19 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
 import * as XLSX from 'xlsx';
 
 type Municipio = { id: number; nombre: string };
+type ImportResult = { municipios: number; instituciones: number; registros: number; errors: number; };
 
 export default function PlanesMunicipiosPage() {
   const [municipios, setMunicipios] = useState<Municipio[]>([]);
   const [loading, setLoading] = useState(true);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
-  const [importResult, setImportResult] = useState<any>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
   
   const [isMuniModalOpen, setIsMuniModalOpen] = useState(false);
   const [editingMuni, setEditingMuni] = useState<Municipio | null>(null);
@@ -21,17 +22,17 @@ export default function PlanesMunicipiosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  const fetchMunicipios = () => {
+  const fetchMunicipios = useCallback(() => {
     setLoading(true);
-    fetch('/api/municipios').then(res => res.json()).then(data => {
+    fetch('/api/municipios?tipo=PLANES').then(res => res.json()).then(data => {
       setMunicipios(data);
       setLoading(false);
     });
-  };
+  }, []);
 
   useEffect(() => {
     fetchMunicipios();
-  }, []);
+  }, [fetchMunicipios]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,10 +72,14 @@ export default function PlanesMunicipiosPage() {
     setSaving(true);
     const url = editingMuni ? `/api/municipios/${editingMuni.id}` : '/api/municipios';
     const method = editingMuni ? 'PUT' : 'POST';
+    const body = editingMuni 
+      ? { nombre: muniNombre } 
+      : { nombre: muniNombre, tipoUso: 'PLANES' };
+
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: muniNombre })
+      body: JSON.stringify(body)
     });
     setSaving(false);
     setIsMuniModalOpen(false);

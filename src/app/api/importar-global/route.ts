@@ -35,7 +35,12 @@ export async function POST(request: Request) {
         const muniNameStr = String(municipioName).trim();
         let municipio = await prisma.municipio.findUnique({ where: { nombre: muniNameStr } });
         if (!municipio) {
-          municipio = await prisma.municipio.create({ data: { nombre: muniNameStr } });
+          municipio = await prisma.municipio.create({ 
+            data: { 
+              nombre: muniNameStr,
+              tipoUso: mode === 'actas' ? 'ACTAS' : mode === 'planes' ? 'PLANES' : 'AMBOS'
+            } 
+          });
           countMunicipios++;
         }
 

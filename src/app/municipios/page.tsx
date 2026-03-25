@@ -1,9 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Modal from '@/components/Modal';
 
-type Municipio = { id: number; nombre: string };
+type Municipio = { id: number; nombre: string; tipoUso: string };
 
 export default function MunicipiosPage() {
   const [municipios, setMunicipios] = useState<Municipio[]>([]);
@@ -11,28 +11,34 @@ export default function MunicipiosPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formNombre, setFormNombre] = useState('');
+  const [formTipoUso, setFormTipoUso] = useState('AMBOS');
 
-  const fetchMunicipios = () => {
+  const fetchMunicipios = useCallback(() => {
     setLoading(true);
     fetch('/api/municipios').then(res => res.json()).then(data => {
       setMunicipios(data);
       setLoading(false);
     });
-  };
+  }, []);
 
   useEffect(() => {
     fetchMunicipios();
-  }, []);
+  }, [fetchMunicipios]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingId ? `/api/municipios/${editingId}` : '/api/municipios';
     const method = editingId ? 'PUT' : 'POST';
     
+    const body = { 
+      nombre: formNombre,
+      tipoUso: formTipoUso
+    };
+
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: formNombre })
+      body: JSON.stringify(body)
     });
     
     setIsModalOpen(false);
@@ -42,12 +48,14 @@ export default function MunicipiosPage() {
   const openEdit = (m: Municipio) => {
     setEditingId(m.id);
     setFormNombre(m.nombre);
+    setFormTipoUso(m.tipoUso);
     setIsModalOpen(true);
   };
 
   const openCreate = () => {
     setEditingId(null);
     setFormNombre('');
+    setFormTipoUso('AMBOS');
     setIsModalOpen(true);
   };
 
@@ -71,6 +79,7 @@ export default function MunicipiosPage() {
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
+                <th>Tipo de Uso</th>
                 <th style={{ width: '300px' }}>Acciones</th>
               </tr>
             </thead>
@@ -80,6 +89,9 @@ export default function MunicipiosPage() {
                   <td>{String(idx + 1).padStart(2, '0')}</td>
                   <td>{m.nombre}</td>
                   <td>
+                    <span className={`tag ${m.tipoUso.toLowerCase()}`}>{m.tipoUso}</span>
+                  </td>
+                  <td>
                     <Link href={`/municipios/${m.id}`} className="btn" style={{ marginRight: '0.5rem', background: '#e0f2fe', color: 'var(--primary-hover)' }}>Instituciones</Link>
                     <button className="btn" style={{ marginRight: '0.5rem', background: '#e2e8f0' }} onClick={() => openEdit(m)}>Editar</button>
                     <button className="btn btn-danger" onClick={() => handleDelete(m.id)}>Eliminar</button>
@@ -87,7 +99,7 @@ export default function MunicipiosPage() {
                 </tr>
               ))}
               {municipios.length === 0 && (
-                <tr><td colSpan={3} style={{textAlign:'center'}}>No hay municipios registrados</td></tr>
+                <tr><td colSpan={4} style={{textAlign:'center'}}>No hay municipios registrados</td></tr>
               )}
             </tbody>
           </table>
@@ -106,12 +118,38 @@ export default function MunicipiosPage() {
               placeholder="Ej: Bogotá"
             />
           </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Tipo de Uso</label>
+            <select 
+              required
+              className="input-field" 
+              value={formTipoUso} 
+              onChange={e => setFormTipoUso(e.target.value)}
+            >
+              <option value="ACTAS">Actas</option>
+              <option value="PLANES">Planes</option>
+              <option value="AMBOS">Ambos</option>
+            </select>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
             <button type="button" className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsModalOpen(false)}>Cancelar</button>
             <button type="submit" className="btn btn-primary">Guardar</button>
           </div>
         </form>
       </Modal>
+
+      <style jsx>{`
+        .tag {
+          padding: 0.25rem 0.75rem;
+          border-radius: 9999px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          text-transform: uppercase;
+        }
+        .tag.actas { background-color: #e0f2fe; color: #0ea5e9; }
+        .tag.planes { background-color: #dcfce7; color: #22c55e; }
+        .tag.ambos { background-color: #e2e8f0; color: #475569; }
+      `}</style>
     </div>
   );
 }
