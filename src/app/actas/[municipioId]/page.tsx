@@ -113,7 +113,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
           {filteredInstituciones.map((i, idx) => (
             <Link key={i.id} href={`/actas/${municipioId}/${i.id}`} className="glass-panel" style={{ display: 'block', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>
+              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.75rem', fontWeight: 600, color: '#000000' }}>
                 {String(idx + 1).padStart(2, '0')}
               </div>
               <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '1rem', marginTop: '1rem' }}>{i.nombre}</h3>

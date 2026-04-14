@@ -35,6 +35,8 @@ export async function GET() {
         instituciones: instCount,
         actas: actaCount,
         planes: planesCount,
+        instConActas,
+        instConPlanes,
         coberturaActas: instCount > 0 ? Math.round((instConActas / instCount) * 100) : 0,
         coberturaPlanes: instCount > 0 ? Math.round((instConPlanes / instCount) * 100) : 0,
       },

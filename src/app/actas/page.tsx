@@ -133,7 +133,7 @@ export default function ActasMunicipiosPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {filteredMunicipios.map((m, idx) => (
             <Link key={m.id} href={`/actas/${m.id}`} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.5rem', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>
+              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.8rem', fontWeight: 600, color: '#000000' }}>
                 {String(idx + 1).padStart(2, '0')}
               </div>
               <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', margin: '1.5rem 0' }}>{m.nombre}</h3>
