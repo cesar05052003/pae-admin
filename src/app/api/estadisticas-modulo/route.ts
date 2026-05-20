@@ -7,19 +7,22 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const modo = searchParams.get('modo'); // 'actas' | 'planes'
 
+  const tipoUso = modo === 'planes' ? 'PLANES' : 'ACTAS';
+
   try {
     const [muniCount, instCount, instConRegistro] = await Promise.all([
-      prisma.municipio.count(),
-      prisma.institucion.count(),
+      prisma.municipio.count({ where: { tipoUso } }),
+      prisma.institucion.count({ where: { municipio: { tipoUso } } }),
       modo === 'planes'
-        ? prisma.institucion.count({ where: { planes: { some: {} } } })
-        : prisma.institucion.count({ where: { actas: { some: {} } } }),
+        ? prisma.institucion.count({ where: { municipio: { tipoUso }, planes: { some: {} } } })
+        : prisma.institucion.count({ where: { municipio: { tipoUso }, actas: { some: {} } } }),
     ]);
 
     const cobertura = instCount > 0 ? Math.round((instConRegistro / instCount) * 100) : 0;
     const instSinRegistro = instCount - instConRegistro;
 
     const municipios = await prisma.municipio.findMany({
+      where: { tipoUso },
       include: {
         instituciones: {
           select: {
