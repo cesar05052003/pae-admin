@@ -11,7 +11,7 @@ export default function MunicipiosPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formNombre, setFormNombre] = useState('');
-  const [formTipoUso, setFormTipoUso] = useState('AMBOS');
+  const [formTipoUso, setFormTipoUso] = useState('ACTAS');
 
   const fetchMunicipios = useCallback(() => {
     setLoading(true);
@@ -55,7 +55,7 @@ export default function MunicipiosPage() {
   const openCreate = () => {
     setEditingId(null);
     setFormNombre('');
-    setFormTipoUso('AMBOS');
+    setFormTipoUso('ACTAS');
     setIsModalOpen(true);
   };
 
@@ -128,7 +128,6 @@ export default function MunicipiosPage() {
             >
               <option value="ACTAS">Actas</option>
               <option value="PLANES">Planes</option>
-              <option value="AMBOS">Ambos</option>
             </select>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>

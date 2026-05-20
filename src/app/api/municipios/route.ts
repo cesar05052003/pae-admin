@@ -10,21 +10,10 @@ export async function GET(request: Request) {
   try {
     let where: Prisma.MunicipioWhereInput | undefined = undefined;
 
-    // Si se especifica tipo (ACTAS o PLANES), filtrar por tipoUso
     if (tipo === 'ACTAS') {
-      where = {
-        OR: [
-          { tipoUso: 'ACTAS' },
-          { tipoUso: 'AMBOS' }
-        ]
-      };
+      where = { tipoUso: 'ACTAS' };
     } else if (tipo === 'PLANES') {
-      where = {
-        OR: [
-          { tipoUso: 'PLANES' },
-          { tipoUso: 'AMBOS' }
-        ]
-      };
+      where = { tipoUso: 'PLANES' };
     } else if (conActas === 'true') {
       where = { actas: { some: {} } };
     }
