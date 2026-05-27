@@ -6,13 +6,6 @@ import * as XLSX from 'xlsx';
 type Institucion = { id: number; nombre: string; municipioId: number; tipoInstitucion?: string; municipio?: { nombre: string } };
 type Municipio = { id: number; nombre: string };
 
-const ZONA_TO_ENUM: Record<string, string> = {
-  'RURAL':        'RURAL',
-  'URBANA':       'URBANA',
-  'RURAL,URBANA': 'RURAL_URBANA',
-  'URBANA,RURAL': 'URBANA_RURAL',
-};
-
 const TIPO_LABELS: Record<string, string> = {
   RURAL:        'Rural',
   URBANA:       'Urbana',
@@ -213,6 +206,7 @@ export default function InstitucionesPage() {
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Municipio</th>
+                <th>Zona</th>
                 <th style={{ width: '150px' }}>Acciones</th>
               </tr>
             </thead>
@@ -223,12 +217,26 @@ export default function InstitucionesPage() {
                   <td>{i.nombre}</td>
                   <td>{i.municipio?.nombre}</td>
                   <td>
+                    {i.tipoInstitucion && (
+                      <span style={{
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '99px',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        background: ({ RURAL: '#fef3c7', URBANA: '#ede9fe', RURAL_URBANA: '#dbeafe', URBANA_RURAL: '#d1fae5' } as Record<string,string>)[i.tipoInstitucion] ?? '#f1f5f9',
+                        color: ({ RURAL: '#b45309', URBANA: '#6d28d9', RURAL_URBANA: '#1d4ed8', URBANA_RURAL: '#065f46' } as Record<string,string>)[i.tipoInstitucion] ?? '#475569',
+                      }}>
+                        {TIPO_LABELS[i.tipoInstitucion] ?? i.tipoInstitucion}
+                      </span>
+                    )}
+                  </td>
+                  <td>
                     <button className="btn" style={{ marginRight: '0.5rem', background: '#e2e8f0', padding: '0.25rem 0.5rem' }} onClick={() => openEdit(i)}>Editar</button>
                     <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(i.id)}>Del</button>
                   </td>
                 </tr>
               ))}
-              {instituciones.length === 0 && <tr><td colSpan={4} style={{textAlign:'center'}}>No hay instituciones</td></tr>}
+              {instituciones.length === 0 && <tr><td colSpan={5} style={{textAlign:'center'}}>No hay instituciones</td></tr>}
             </tbody>
           </table>
         )}
