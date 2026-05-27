@@ -6,8 +6,13 @@ import Modal from '@/components/Modal';
 type InstitucionWithCount = {
   id: number;
   nombre: string;
+  tipoInstitucion?: string;
   _count: { actas: number; planes: number };
 };
+
+const ZONA_LABELS: Record<string, string> = { RURAL: 'Rural', URBANA: 'Urbana', RURAL_URBANA: 'Rural / Urbana', URBANA_RURAL: 'Urbana / Rural' };
+const ZONA_BG: Record<string, string>     = { RURAL: '#fef3c7', URBANA: '#ede9fe', RURAL_URBANA: '#dbeafe', URBANA_RURAL: '#d1fae5' };
+const ZONA_COLOR: Record<string, string>  = { RURAL: '#b45309', URBANA: '#6d28d9', RURAL_URBANA: '#1d4ed8', URBANA_RURAL: '#065f46' };
 type RouteParams = { params: Promise<{ municipioId: string }> };
 
 function ProgressBar({ value, max, color, label }: { value: number; max: number; color: string; label: string }) {
@@ -116,7 +121,14 @@ export default function ActasInstitucionesPage(props: RouteParams) {
               <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.75rem', fontWeight: 600, color: '#000000' }}>
                 {String(idx + 1).padStart(2, '0')}
               </div>
-              <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '1rem', marginTop: '1rem' }}>{i.nombre}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '1rem', marginBottom: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0, flex: 1 }}>{i.nombre}</h3>
+                {i.tipoInstitucion && (
+                  <span style={{ marginLeft: '0.5rem', padding: '0.15rem 0.5rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', background: ZONA_BG[i.tipoInstitucion] ?? '#f1f5f9', color: ZONA_COLOR[i.tipoInstitucion] ?? '#475569' }}>
+                    {ZONA_LABELS[i.tipoInstitucion] ?? i.tipoInstitucion}
+                  </span>
+                )}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <ProgressBar
                   value={i._count?.actas || 0}
