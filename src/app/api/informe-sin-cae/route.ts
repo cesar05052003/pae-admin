@@ -5,16 +5,19 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const soloActas = { tipoUso: { in: ['ACTAS', 'AMBOS'] as const } };
+
     const [totalMunicipios, totalInstituciones, conCae] = await Promise.all([
-      prisma.municipio.count(),
-      prisma.institucion.count(),
-      prisma.institucion.count({ where: { actas: { some: {} } } }),
+      prisma.municipio.count({ where: soloActas }),
+      prisma.institucion.count({ where: { municipio: soloActas } }),
+      prisma.institucion.count({ where: { municipio: soloActas, actas: { some: {} } } }),
     ]);
 
     const sinCae = totalInstituciones - conCae;
     const cobertura = totalInstituciones > 0 ? Math.round((conCae / totalInstituciones) * 100) : 0;
 
     const municipios = await prisma.municipio.findMany({
+      where: soloActas,
       include: {
         instituciones: {
           where: { actas: { none: {} } },
