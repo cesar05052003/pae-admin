@@ -7,19 +7,36 @@ export default function Header() {
       <Link href="/" className="header-brand">
         <img src="/BOTON-LOGO.png" alt="Gobernación de Córdoba" className="app-logo" />
       </Link>
-      <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Link 
-          href="/anotaciones" 
-          style={{ 
-            fontWeight: 500, 
-            color: '#ffffff', 
-            background: '#2563eb', 
-            padding: '0.5rem 1rem', 
-            borderRadius: '0.5rem', 
-            textDecoration: 'none', 
-            transition: 'background 0.2s ease', 
+      <nav style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <Link
+          href="/informe-sin-cae"
+          style={{
+            fontWeight: 500,
+            color: '#ffffff',
+            background: '#ef4444',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.5rem',
+            textDecoration: 'none',
+            transition: 'background 0.2s ease',
             display: 'inline-block'
-          }} 
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = '#dc2626'}
+          onMouseLeave={(e) => e.currentTarget.style.background = '#ef4444'}
+        >
+          Informe Sin CAE
+        </Link>
+        <Link
+          href="/anotaciones"
+          style={{
+            fontWeight: 500,
+            color: '#ffffff',
+            background: '#2563eb',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.5rem',
+            textDecoration: 'none',
+            transition: 'background 0.2s ease',
+            display: 'inline-block'
+          }}
           onMouseEnter={(e) => e.currentTarget.style.background = '#1d4ed8'}
           onMouseLeave={(e) => e.currentTarget.style.background = '#2563eb'}
         >
