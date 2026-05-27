@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const soloActas = { tipoUso: { in: ['ACTAS', 'AMBOS'] as const } };
+    const soloActas = { tipoUso: { in: ['ACTAS' as const, 'AMBOS' as const] } };
 
     const [totalMunicipios, totalInstituciones, conCae] = await Promise.all([
       prisma.municipio.count({ where: soloActas }),
