@@ -13,6 +13,8 @@ datasource db {
 enum TipoInstitucion {
   RURAL
   URBANA
+  RURAL_URBANA
+  URBANA_RURAL
 }
 
 enum TipoMunicipio {

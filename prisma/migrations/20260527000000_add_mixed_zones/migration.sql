@@ -1,0 +1,3 @@
+-- AlterEnum
+ALTER TYPE "TipoInstitucion" ADD VALUE 'RURAL_URBANA';
+ALTER TYPE "TipoInstitucion" ADD VALUE 'URBANA_RURAL';

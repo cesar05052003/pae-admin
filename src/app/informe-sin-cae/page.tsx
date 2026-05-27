@@ -199,8 +199,8 @@ export default function InformeSinCae() {
                             borderRadius: '99px',
                             fontSize: '0.75rem',
                             fontWeight: 600,
-                            background: inst.tipoInstitucion === 'RURAL' ? '#fef3c7' : '#ede9fe',
-                            color: inst.tipoInstitucion === 'RURAL' ? '#b45309' : '#6d28d9',
+                            background: ({ RURAL: '#fef3c7', URBANA: '#ede9fe', RURAL_URBANA: '#dbeafe', URBANA_RURAL: '#d1fae5' } as Record<string, string>)[inst.tipoInstitucion] ?? '#f1f5f9',
+                            color: ({ RURAL: '#b45309', URBANA: '#6d28d9', RURAL_URBANA: '#1d4ed8', URBANA_RURAL: '#065f46' } as Record<string, string>)[inst.tipoInstitucion] ?? '#475569',
                           }}>
                             {inst.tipoInstitucion}
                           </span>

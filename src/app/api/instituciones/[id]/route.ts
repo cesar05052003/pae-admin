@@ -28,8 +28,8 @@ export async function PUT(request: Request, props: RouteParams) {
     const municipioId = json.municipioId ? Number(json.municipioId) : undefined;
     const tipoInstitucion = json.tipoInstitucion || undefined;
 
-    if (tipoInstitucion && !['RURAL', 'URBANA'].includes(tipoInstitucion)) {
-      return NextResponse.json({ error: 'Tipo de institución debe ser RURAL o URBANA' }, { status: 400 });
+    if (tipoInstitucion && !['RURAL', 'URBANA', 'RURAL_URBANA', 'URBANA_RURAL'].includes(tipoInstitucion)) {
+      return NextResponse.json({ error: 'Tipo de institución inválido' }, { status: 400 });
     }
 
     const updateData: any = { nombre, municipioId };

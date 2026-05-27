@@ -39,8 +39,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nombre y municipio son requeridos' }, { status: 400 });
     }
 
-    if (!['RURAL', 'URBANA'].includes(tipoInstitucion)) {
-      return NextResponse.json({ error: 'Tipo de institución debe ser RURAL o URBANA' }, { status: 400 });
+    if (!['RURAL', 'URBANA', 'RURAL_URBANA', 'URBANA_RURAL'].includes(tipoInstitucion)) {
+      return NextResponse.json({ error: 'Tipo de institución inválido' }, { status: 400 });
     }
 
     const institucion = await prisma.institucion.create({

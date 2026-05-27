@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         continue;
       }
 
-      const tipoInstitucion = (['RURAL', 'URBANA'].includes(item.tipoInstitucion) ? item.tipoInstitucion : 'URBANA');
+      const tipoInstitucion = (['RURAL', 'URBANA', 'RURAL_URBANA', 'URBANA_RURAL'].includes(item.tipoInstitucion) ? item.tipoInstitucion : 'URBANA');
 
       try {
         await prisma.institucion.create({
