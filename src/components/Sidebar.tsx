@@ -12,7 +12,8 @@ export default function Sidebar() {
     { label: 'Instituciones', href: '/instituciones' },
     { label: 'Actas', href: '/actas' },
     { label: 'Planes Pedagógicos', href: '/planes' },
-    { label: 'Anotaciones', href: '/anotaciones' }
+    { label: 'Anotaciones', href: '/anotaciones' },
+    { label: 'Informe Sin CAE', href: '/informe-sin-cae' },
   ];
 
   return (
