@@ -41,15 +41,19 @@ export default function EstadisticasDashboard() {
   const [loading, setLoading]     = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/estadisticas').then(r => r.json()),
-      fetch('/api/estadisticas-rurales').then(r => r.json()),
-    ]).then(([gen, rural]) => {
-      setTotales(gen.totales);
-      setDataChart(gen.municipiosData);
-      setRurales(rural);
-      setLoading(false);
-    }).catch(err => { console.error(err); setLoading(false); });
+    fetch('/api/estadisticas')
+      .then(r => r.json())
+      .then(data => {
+        setTotales(data.totales);
+        setDataChart(data.municipiosData);
+        setLoading(false);
+      })
+      .catch(err => { console.error(err); setLoading(false); });
+
+    fetch('/api/estadisticas-rurales')
+      .then(r => r.json())
+      .then(data => { if (data.rurales) setRurales(data); })
+      .catch(err => console.error('Rural stats error:', err));
   }, []);
 
   if (loading) return <div className="container"><p>Cargando estadísticas...</p></div>;
