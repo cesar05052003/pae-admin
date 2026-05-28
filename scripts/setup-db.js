@@ -344,6 +344,27 @@ async function main() {
   `);
   console.log('Municipio unique constraint: OK');
 
+  // 3. Copy all ACTAS municipios → PLANES (idempotent, bulk INSERT)
+  await prisma.$executeRawUnsafe(`
+    INSERT INTO "Municipio" (nombre, "tipoUso", "createdAt", "updatedAt")
+    SELECT nombre, 'PLANES'::"TipoMunicipio", NOW(), NOW()
+    FROM "Municipio"
+    WHERE "tipoUso" = 'ACTAS'
+    ON CONFLICT (nombre, "tipoUso") DO NOTHING
+  `);
+
+  // 4. Copy institutions from ACTAS municipios → their PLANES counterparts (bulk INSERT)
+  await prisma.$executeRawUnsafe(`
+    INSERT INTO "Institucion" (nombre, "municipioId", "tipoInstitucion", "createdAt", "updatedAt")
+    SELECT i.nombre, pm.id, i."tipoInstitucion", NOW(), NOW()
+    FROM "Municipio" am
+    JOIN "Institucion" i ON i."municipioId" = am.id
+    JOIN "Municipio" pm ON pm.nombre = am.nombre AND pm."tipoUso" = 'PLANES'
+    WHERE am."tipoUso" = 'ACTAS'
+    ON CONFLICT (nombre, "municipioId") DO NOTHING
+  `);
+  console.log('Planes municipios + instituciones: OK');
+
   // 2. Assign zones using a single bulk UPDATE with a VALUES table
   const valuesClause = ZONE_DATA
     .map(([n, m, z]) => `('${n}', '${m}', '${z}')`)
