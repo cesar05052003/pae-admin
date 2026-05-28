@@ -33,13 +33,13 @@ export async function POST(request: Request) {
 
       try {
         const muniNameStr = String(municipioName).trim();
-        let municipio = await prisma.municipio.findUnique({ where: { nombre: muniNameStr } });
+        const tipoUso = mode === 'actas' ? 'ACTAS' : mode === 'planes' ? 'PLANES' : 'AMBOS';
+        let municipio = await prisma.municipio.findUnique({
+          where: { nombre_tipoUso: { nombre: muniNameStr, tipoUso } }
+        });
         if (!municipio) {
-          municipio = await prisma.municipio.create({ 
-            data: { 
-              nombre: muniNameStr,
-              tipoUso: mode === 'actas' ? 'ACTAS' : mode === 'planes' ? 'PLANES' : 'AMBOS'
-            } 
+          municipio = await prisma.municipio.create({
+            data: { nombre: muniNameStr, tipoUso }
           });
           countMunicipios++;
         }
