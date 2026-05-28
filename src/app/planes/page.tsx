@@ -22,6 +22,8 @@ export default function PlanesMunicipiosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [copying, setCopying] = useState(false);
   const [copyResult, setCopyResult] = useState<{ municipiosCreados: number; institucionesCreadas: number } | null>(null);
+  const [cleaning, setCleaning] = useState(false);
+  const [cleanResult, setCleanResult] = useState<{ deleted: number } | null>(null);
   const router = useRouter();
 
   const fetchMunicipios = useCallback(() => {
@@ -108,6 +110,17 @@ export default function PlanesMunicipiosPage() {
     setIsMuniModalOpen(true);
   };
 
+  const limpiarCopiados = async () => {
+    if (!confirm('¿Eliminar los municipios copiados por error (los que no tienen planes registrados y coinciden con nombres de Actas)?')) return;
+    setCleaning(true);
+    setCleanResult(null);
+    const res = await fetch('/api/admin/cleanup-planes', { method: 'POST' });
+    const data = await res.json();
+    setCleanResult(data);
+    setCleaning(false);
+    fetchMunicipios();
+  };
+
   const copiarDesdeActas = async () => {
     if (!confirm('¿Copiar todos los municipios e instituciones de Actas a Planes? Los que ya existan serán omitidos.')) return;
     setCopying(true);
@@ -136,6 +149,7 @@ export default function PlanesMunicipiosPage() {
             onChange={e => setSearchTerm(e.target.value)}
             style={{ minWidth: '220px', maxWidth: '320px' }}
           />
+          <button className="btn" style={{ background: '#fee2e2', color: '#dc2626' }} onClick={limpiarCopiados} disabled={cleaning}>{cleaning ? 'Limpiando...' : 'Limpiar copiados'}</button>
           <button className="btn" style={{ background: '#e0f2fe', color: '#0369a1' }} onClick={copiarDesdeActas} disabled={copying}>{copying ? 'Copiando...' : 'Copiar desde Actas'}</button>
           <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel Global (Planes)</button>
           <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateMuni}>+ Nuevo Municipio</button>
@@ -143,6 +157,11 @@ export default function PlanesMunicipiosPage() {
         </div>
       </div>
       
+      {cleanResult && (
+        <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+          ✔ {cleanResult.deleted} municipios eliminados
+        </p>
+      )}
       {copyResult && (
         <p style={{ color: 'var(--success-color)', fontSize: '0.85rem', marginBottom: '1rem' }}>
           ✔ {copyResult.municipiosCreados} municipios y {copyResult.institucionesCreadas} instituciones copiados desde Actas

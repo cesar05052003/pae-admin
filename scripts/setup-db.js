@@ -340,21 +340,6 @@ async function main() {
   `);
   console.log('Municipio unique constraint: OK');
 
-  // 3. ONE-TIME CLEANUP: remove the PLANES municipios I incorrectly auto-copied on 2026-05-28
-  //    Targets only: PLANES + no plan records + same name as an ACTAS municipio + created that day
-  const cleaned = await prisma.$executeRawUnsafe(`
-    DELETE FROM "Municipio"
-    WHERE "tipoUso"::text = 'PLANES'
-      AND "createdAt" > '2026-05-28 20:00:00'
-      AND nombre IN (SELECT nombre FROM "Municipio" WHERE "tipoUso"::text = 'ACTAS')
-      AND NOT EXISTS (
-        SELECT 1 FROM "PlanPedagogico" pp
-        JOIN "Institucion" i ON pp."institucionId" = i.id
-        WHERE i."municipioId" = "Municipio".id
-      )
-  `);
-  console.log(`Cleanup stale planes municipios: ${cleaned} removed`);
-
   // 3. Assign zones using a single bulk UPDATE with a VALUES table
   const valuesClause = ZONE_DATA
     .map(([n, m, z]) => `('${n}', '${m}', '${z}')`)
