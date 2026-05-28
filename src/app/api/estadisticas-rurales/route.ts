@@ -1,78 +1,92 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { TipoInstitucion } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
-const RURALES: TipoInstitucion[] = [
-  TipoInstitucion.RURAL,
-  TipoInstitucion.RURAL_URBANA,
-  TipoInstitucion.URBANA_RURAL,
-];
+const RURAL_TIPOS = ['RURAL', 'RURAL_URBANA', 'URBANA_RURAL'];
+
+const ZONA_LABELS: Record<string, string> = {
+  RURAL:        'Rural',
+  URBANA:       'Urbana',
+  RURAL_URBANA: 'Rural / Urbana',
+  URBANA_RURAL: 'Urbana / Rural',
+};
 
 export async function GET() {
   try {
-    const [distribucionRaw, totalRurales, ruralesConActas, ruralesConPlanes, municipios] =
-      await Promise.all([
-        prisma.institucion.groupBy({
-          by: ['tipoInstitucion'],
-          _count: { id: true },
-        }),
-        prisma.institucion.count({ where: { tipoInstitucion: { in: RURALES } } }),
-        prisma.institucion.count({ where: { tipoInstitucion: { in: RURALES }, actas: { some: {} } } }),
-        prisma.institucion.count({ where: { tipoInstitucion: { in: RURALES }, planes: { some: {} } } }),
-        prisma.municipio.findMany({
-          include: {
-            instituciones: {
-              where: { tipoInstitucion: { in: RURALES } },
-              select: {
-                id: true,
-                actas:  { select: { id: true }, take: 1 },
-                planes: { select: { id: true }, take: 1 },
-              },
-            },
-          },
-          orderBy: { nombre: 'asc' },
-        }),
-      ]);
-
-    const ZONA_LABELS: Record<string, string> = {
-      RURAL:        'Rural',
-      URBANA:       'Urbana',
-      RURAL_URBANA: 'Rural / Urbana',
-      URBANA_RURAL: 'Urbana / Rural',
-    };
+    // Use ::text cast so queries work even before enum migration runs
+    const [distribucionRaw, ruralesCounts, municipiosRaw] = await Promise.all([
+      prisma.$queryRaw<Array<{ tipo: string; count: bigint }>>`
+        SELECT "tipoInstitucion"::text AS tipo, COUNT(*) AS count
+        FROM "Institucion"
+        GROUP BY "tipoInstitucion"::text
+        ORDER BY count DESC
+      `,
+      prisma.$queryRaw<Array<{ total: bigint; con_actas: bigint; con_planes: bigint }>>`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(CASE WHEN EXISTS (
+            SELECT 1 FROM "Acta" a WHERE a."institucionId" = i.id
+          ) THEN 1 END) AS con_actas,
+          COUNT(CASE WHEN EXISTS (
+            SELECT 1 FROM "PlanPedagogico" p WHERE p."institucionId" = i.id
+          ) THEN 1 END) AS con_planes
+        FROM "Institucion" i
+        WHERE "tipoInstitucion"::text = ANY(ARRAY['RURAL','RURAL_URBANA','URBANA_RURAL'])
+      `,
+      prisma.$queryRaw<Array<{ nombre: string; total: bigint; con_actas: bigint; con_planes: bigint }>>`
+        SELECT
+          m.nombre,
+          COUNT(i.id)           AS total,
+          COUNT(CASE WHEN EXISTS (
+            SELECT 1 FROM "Acta" a WHERE a."institucionId" = i.id
+          ) THEN 1 END)         AS con_actas,
+          COUNT(CASE WHEN EXISTS (
+            SELECT 1 FROM "PlanPedagogico" p WHERE p."institucionId" = i.id
+          ) THEN 1 END)         AS con_planes
+        FROM "Municipio" m
+        JOIN "Institucion" i ON i."municipioId" = m.id
+        WHERE i."tipoInstitucion"::text = ANY(ARRAY['RURAL','RURAL_URBANA','URBANA_RURAL'])
+        GROUP BY m.nombre
+        HAVING COUNT(i.id) > 0
+        ORDER BY m.nombre
+      `,
+    ]);
 
     const distribucion = distribucionRaw.map(d => ({
-      zona:  ZONA_LABELS[d.tipoInstitucion] ?? d.tipoInstitucion,
-      count: d._count.id,
+      zona:  ZONA_LABELS[d.tipo] ?? d.tipo,
+      count: Number(d.count),
     }));
 
-    const municipiosData = municipios
-      .filter(m => m.instituciones.length > 0)
-      .map(m => {
-        const conActas  = m.instituciones.filter(i => i.actas.length  > 0).length;
-        const conPlanes = m.instituciones.filter(i => i.planes.length > 0).length;
-        return {
-          nombre:    m.nombre,
-          total:     m.instituciones.length,
-          conActas,
-          sinActas:  m.instituciones.length - conActas,
-          conPlanes,
-          sinPlanes: m.instituciones.length - conPlanes,
-        };
-      });
+    const r = ruralesCounts[0];
+    const total     = Number(r?.total     ?? 0);
+    const conActas  = Number(r?.con_actas  ?? 0);
+    const conPlanes = Number(r?.con_planes ?? 0);
+
+    const municipiosData = municipiosRaw.map(m => {
+      const tot = Number(m.total);
+      const ca  = Number(m.con_actas);
+      const cp  = Number(m.con_planes);
+      return {
+        nombre:    m.nombre,
+        total:     tot,
+        conActas:  ca,
+        sinActas:  tot - ca,
+        conPlanes: cp,
+        sinPlanes: tot - cp,
+      };
+    });
 
     return NextResponse.json({
       distribucion,
       rurales: {
-        total:          totalRurales,
-        conActas:       ruralesConActas,
-        sinActas:       totalRurales - ruralesConActas,
-        coberturaActas: totalRurales > 0 ? Math.round((ruralesConActas  / totalRurales) * 100) : 0,
-        conPlanes:      ruralesConPlanes,
-        sinPlanes:      totalRurales - ruralesConPlanes,
-        coberturaPlanes:totalRurales > 0 ? Math.round((ruralesConPlanes / totalRurales) * 100) : 0,
+        total,
+        conActas,
+        sinActas:        total - conActas,
+        coberturaActas:  total > 0 ? Math.round((conActas  / total) * 100) : 0,
+        conPlanes,
+        sinPlanes:       total - conPlanes,
+        coberturaPlanes: total > 0 ? Math.round((conPlanes / total) * 100) : 0,
       },
       municipiosData,
     });
