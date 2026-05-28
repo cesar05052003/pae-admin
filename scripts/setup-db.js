@@ -340,36 +340,22 @@ async function main() {
   `);
   console.log('Municipio unique constraint: OK');
 
-  // 3. Diagnose: how many ACTAS municipios exist?
-  const actasRows = await prisma.$queryRawUnsafe(
-    `SELECT COUNT(*)::int AS count FROM "Municipio" WHERE "tipoUso"::text = 'ACTAS'`
-  );
-  const actasCount = actasRows[0]?.count ?? 0;
-  console.log(`ACTAS municipios found: ${actasCount}`);
-
-  // 4. Copy all ACTAS municipios → PLANES (idempotent, bulk INSERT)
-  const muniCopied = await prisma.$executeRawUnsafe(`
-    INSERT INTO "Municipio" (nombre, "tipoUso", "createdAt", "updatedAt")
-    SELECT nombre, 'PLANES'::"TipoMunicipio", NOW(), NOW()
-    FROM "Municipio"
-    WHERE "tipoUso"::text = 'ACTAS'
-    ON CONFLICT (nombre, "tipoUso") DO NOTHING
+  // 3. ONE-TIME CLEANUP: remove the PLANES municipios I incorrectly auto-copied on 2026-05-28
+  //    Targets only: PLANES + no plan records + same name as an ACTAS municipio + created that day
+  const cleaned = await prisma.$executeRawUnsafe(`
+    DELETE FROM "Municipio"
+    WHERE "tipoUso"::text = 'PLANES'
+      AND "createdAt" > '2026-05-28 20:00:00'
+      AND nombre IN (SELECT nombre FROM "Municipio" WHERE "tipoUso"::text = 'ACTAS')
+      AND NOT EXISTS (
+        SELECT 1 FROM "PlanPedagogico" pp
+        JOIN "Institucion" i ON pp."institucionId" = i.id
+        WHERE i."municipioId" = "Municipio".id
+      )
   `);
-  console.log(`Planes municipios copied/skipped: ${muniCopied}`);
+  console.log(`Cleanup stale planes municipios: ${cleaned} removed`);
 
-  // 5. Copy institutions from ACTAS municipios → their PLANES counterparts (bulk INSERT)
-  const instCopied = await prisma.$executeRawUnsafe(`
-    INSERT INTO "Institucion" (nombre, "municipioId", "tipoInstitucion", "createdAt", "updatedAt")
-    SELECT i.nombre, pm.id, i."tipoInstitucion", NOW(), NOW()
-    FROM "Municipio" am
-    JOIN "Institucion" i ON i."municipioId" = am.id
-    JOIN "Municipio" pm ON pm.nombre = am.nombre AND pm."tipoUso"::text = 'PLANES'
-    WHERE am."tipoUso"::text = 'ACTAS'
-    ON CONFLICT (nombre, "municipioId") DO NOTHING
-  `);
-  console.log(`Planes instituciones copied/skipped: ${instCopied}`);
-
-  // 2. Assign zones using a single bulk UPDATE with a VALUES table
+  // 3. Assign zones using a single bulk UPDATE with a VALUES table
   const valuesClause = ZONE_DATA
     .map(([n, m, z]) => `('${n}', '${m}', '${z}')`)
     .join(',\n    ');
