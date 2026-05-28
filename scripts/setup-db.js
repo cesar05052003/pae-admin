@@ -331,6 +331,19 @@ async function main() {
   );
   console.log('Enum values: OK');
 
+  // 2. Change Municipio unique constraint: nombre → (nombre, tipoUso)
+  await prisma.$executeRawUnsafe(
+    `ALTER TABLE "Municipio" DROP CONSTRAINT IF EXISTS "Municipio_nombre_key"`
+  );
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'Municipio_nombre_tipoUso_key')
+      THEN ALTER TABLE "Municipio" ADD CONSTRAINT "Municipio_nombre_tipoUso_key" UNIQUE ("nombre", "tipoUso");
+      END IF;
+    END $$
+  `);
+  console.log('Municipio unique constraint: OK');
+
   // 2. Assign zones using a single bulk UPDATE with a VALUES table
   const valuesClause = ZONE_DATA
     .map(([n, m, z]) => `('${n}', '${m}', '${z}')`)
@@ -343,7 +356,7 @@ async function main() {
       ${valuesClause}
     ) AS vals(nombre, municipio, zona)
     WHERE i.nombre = vals.nombre
-      AND i."municipioId" = (SELECT id FROM "Municipio" WHERE nombre = vals.municipio)
+      AND i."municipioId" IN (SELECT id FROM "Municipio" WHERE nombre = vals.municipio)
   `;
 
   const result = await prisma.$executeRawUnsafe(sql);

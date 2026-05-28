@@ -20,6 +20,8 @@ export default function PlanesMunicipiosPage() {
   const [muniNombre, setMuniNombre] = useState('');
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [copying, setCopying] = useState(false);
+  const [copyResult, setCopyResult] = useState<{ municipiosCreados: number; institucionesCreadas: number } | null>(null);
   const router = useRouter();
 
   const fetchMunicipios = useCallback(() => {
@@ -106,6 +108,17 @@ export default function PlanesMunicipiosPage() {
     setIsMuniModalOpen(true);
   };
 
+  const copiarDesdeActas = async () => {
+    if (!confirm('¿Copiar todos los municipios e instituciones de Actas a Planes? Los que ya existan serán omitidos.')) return;
+    setCopying(true);
+    setCopyResult(null);
+    const res = await fetch('/api/planes/copiar-desde-actas', { method: 'POST' });
+    const data = await res.json();
+    setCopyResult(data);
+    setCopying(false);
+    fetchMunicipios();
+  };
+
   const filteredMunicipios = municipios.filter(m => m.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
@@ -123,12 +136,19 @@ export default function PlanesMunicipiosPage() {
             onChange={e => setSearchTerm(e.target.value)}
             style={{ minWidth: '220px', maxWidth: '320px' }}
           />
+          <button className="btn" style={{ background: '#e0f2fe', color: '#0369a1' }} onClick={copiarDesdeActas} disabled={copying}>{copying ? 'Copiando...' : 'Copiar desde Actas'}</button>
           <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel Global (Planes)</button>
           <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateMuni}>+ Nuevo Municipio</button>
           <button className="btn btn-primary" onClick={() => router.push('/estadisticas/planes')}>Ver Estadísticas</button>
         </div>
       </div>
       
+      {copyResult && (
+        <p style={{ color: 'var(--success-color)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          ✔ {copyResult.municipiosCreados} municipios y {copyResult.institucionesCreadas} instituciones copiados desde Actas
+        </p>
+      )}
+
       {loading ? <p>Cargando municipios...</p> : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {filteredMunicipios.map((m, idx) => (
