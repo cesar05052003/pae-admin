@@ -331,16 +331,12 @@ async function main() {
   );
   console.log('Enum values: OK');
 
-  // 2. Change Municipio unique constraint: nombre → (nombre, tipoUso)
-  await prisma.$executeRawUnsafe(
-    `ALTER TABLE "Municipio" DROP CONSTRAINT IF EXISTS "Municipio_nombre_key"`
-  );
+  // 2. Change Municipio unique: drop old single-column index, create composite index
+  // Prisma creates @unique as a UNIQUE INDEX (not a constraint), so DROP INDEX not DROP CONSTRAINT
+  await prisma.$executeRawUnsafe(`DROP INDEX IF EXISTS "Municipio_nombre_key"`);
   await prisma.$executeRawUnsafe(`
-    DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'Municipio_nombre_tipoUso_key')
-      THEN ALTER TABLE "Municipio" ADD CONSTRAINT "Municipio_nombre_tipoUso_key" UNIQUE ("nombre", "tipoUso");
-      END IF;
-    END $$
+    CREATE UNIQUE INDEX IF NOT EXISTS "Municipio_nombre_tipoUso_key"
+    ON "Municipio" ("nombre", "tipoUso")
   `);
   console.log('Municipio unique constraint: OK');
 
