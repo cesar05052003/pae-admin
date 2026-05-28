@@ -39,6 +39,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
   const [isInstModalOpen, setIsInstModalOpen] = useState(false);
   const [editingInst, setEditingInst] = useState<InstitucionWithCount | null>(null);
   const [instNombre, setInstNombre] = useState('');
+  const [instZona, setInstZona] = useState('URBANA');
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -65,7 +66,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: instNombre, municipioId: Number(municipioId) })
+      body: JSON.stringify({ nombre: instNombre, municipioId: Number(municipioId), tipoInstitucion: instZona })
     });
     setSaving(false);
     setIsInstModalOpen(false);
@@ -75,6 +76,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
   const openCreateInst = () => {
     setEditingInst(null);
     setInstNombre('');
+    setInstZona('URBANA');
     setIsInstModalOpen(true);
   };
 
@@ -82,6 +84,7 @@ export default function ActasInstitucionesPage(props: RouteParams) {
     e.preventDefault(); e.stopPropagation();
     setEditingInst(i);
     setInstNombre(i.nombre);
+    setInstZona(i.tipoInstitucion || 'URBANA');
     setIsInstModalOpen(true);
   };
 
@@ -152,9 +155,20 @@ export default function ActasInstitucionesPage(props: RouteParams) {
 
       <Modal isOpen={isInstModalOpen} onClose={() => setIsInstModalOpen(false)} title={editingInst ? 'Editar Institución' : 'Nueva Institución'}>
         <form onSubmit={handleSaveInst} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <label style={{ fontWeight: 500 }}>Nombre de la Institución</label>
-          <input required className="input-field" value={instNombre} onChange={e => setInstNombre(e.target.value)} autoFocus />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
+          <div>
+            <label style={{ fontWeight: 500, display: 'block', marginBottom: '0.4rem' }}>Nombre de la Institución</label>
+            <input required className="input-field" value={instNombre} onChange={e => setInstNombre(e.target.value)} autoFocus />
+          </div>
+          <div>
+            <label style={{ fontWeight: 500, display: 'block', marginBottom: '0.4rem' }}>Zona</label>
+            <select className="input-field" value={instZona} onChange={e => setInstZona(e.target.value)}>
+              <option value="RURAL">Rural</option>
+              <option value="URBANA">Urbana</option>
+              <option value="RURAL_URBANA">Rural / Urbana</option>
+              <option value="URBANA_RURAL">Urbana / Rural</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
             <button type="button" className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsInstModalOpen(false)}>Cancelar</button>
             <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Guardando...' : 'Guardar'}</button>
           </div>
