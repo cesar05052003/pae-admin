@@ -3,10 +3,9 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-// Deletes PLANES municipalities that have no plan records and whose name also
-// exists as an ACTAS municipality — these are the ones incorrectly auto-copied.
 export async function POST() {
   try {
+    // Step 1: delete the bad copies I added (exact ACTAS names, no plans)
     const deleted = await prisma.$executeRawUnsafe(`
       DELETE FROM "Municipio"
       WHERE "tipoUso"::text = 'PLANES'
@@ -17,7 +16,16 @@ export async function POST() {
           WHERE i."municipioId" = "Municipio".id
         )
     `);
-    return NextResponse.json({ deleted });
+
+    // Step 2: strip trailing dots from original PLANES municipality names ("AYAPEL." → "AYAPEL")
+    const renamed = await prisma.$executeRawUnsafe(`
+      UPDATE "Municipio"
+      SET nombre = RTRIM(nombre, '.'), "updatedAt" = NOW()
+      WHERE "tipoUso"::text = 'PLANES'
+        AND nombre LIKE '%.';
+    `);
+
+    return NextResponse.json({ deleted, renamed });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
     return NextResponse.json({ error: message }, { status: 500 });

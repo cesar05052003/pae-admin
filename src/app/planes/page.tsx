@@ -23,7 +23,7 @@ export default function PlanesMunicipiosPage() {
   const [copying, setCopying] = useState(false);
   const [copyResult, setCopyResult] = useState<{ municipiosCreados: number; institucionesCreadas: number } | null>(null);
   const [cleaning, setCleaning] = useState(false);
-  const [cleanResult, setCleanResult] = useState<{ deleted: number } | null>(null);
+  const [cleanResult, setCleanResult] = useState<{ deleted: number; renamed: number } | null>(null);
   const router = useRouter();
 
   const fetchMunicipios = useCallback(() => {
@@ -159,7 +159,7 @@ export default function PlanesMunicipiosPage() {
       
       {cleanResult && (
         <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-          ✔ {cleanResult.deleted} municipios eliminados
+          ✔ {cleanResult.deleted} eliminados · {cleanResult.renamed} nombres corregidos (punto final quitado)
         </p>
       )}
       {copyResult && (
