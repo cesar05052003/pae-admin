@@ -9,6 +9,23 @@ export default function Header() {
       </Link>
       <nav style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <Link
+          href="/estadisticas"
+          style={{
+            fontWeight: 500,
+            color: '#ffffff',
+            background: '#7c3aed',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.5rem',
+            textDecoration: 'none',
+            transition: 'background 0.2s ease',
+            display: 'inline-block'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = '#6d28d9'}
+          onMouseLeave={(e) => e.currentTarget.style.background = '#7c3aed'}
+        >
+          Estadísticas
+        </Link>
+        <Link
           href="/informe-sin-cae"
           style={{
             fontWeight: 500,
