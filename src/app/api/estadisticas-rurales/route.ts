@@ -15,7 +15,7 @@ const ZONA_LABELS: Record<string, string> = {
 export async function GET() {
   try {
     // Use ::text cast so queries work even before enum migration runs
-    const [distribucionRaw, ruralesCounts, municipiosRaw] = await Promise.all([
+    const [distribucionRaw, ruralesCounts, municipiosRaw, porTipoRaw] = await Promise.all([
       prisma.$queryRaw<Array<{ tipo: string; count: bigint }>>`
         SELECT "tipoInstitucion"::text AS tipo, COUNT(*) AS count
         FROM "Institucion"
@@ -51,6 +51,17 @@ export async function GET() {
         HAVING COUNT(i.id) > 0
         ORDER BY m.nombre
       `,
+      prisma.$queryRaw<Array<{ tipo: string; total: bigint; con_cae: bigint }>>`
+        SELECT
+          "tipoInstitucion"::text AS tipo,
+          COUNT(*)                AS total,
+          COUNT(CASE WHEN EXISTS (
+            SELECT 1 FROM "Acta" a WHERE a."institucionId" = i.id
+          ) THEN 1 END)           AS con_cae
+        FROM "Institucion" i
+        GROUP BY "tipoInstitucion"::text
+        ORDER BY "tipoInstitucion"::text
+      `,
     ]);
 
     const distribucion = distribucionRaw.map(d => ({
@@ -77,8 +88,22 @@ export async function GET() {
       };
     });
 
+    const porTipo = porTipoRaw.map(r => {
+      const total  = Number(r.total);
+      const conCae = Number(r.con_cae);
+      return {
+        tipo:      r.tipo,
+        label:     ZONA_LABELS[r.tipo] ?? r.tipo,
+        total,
+        conCae,
+        sinCae:    total - conCae,
+        cobertura: total > 0 ? Math.round((conCae / total) * 100) : 0,
+      };
+    });
+
     return NextResponse.json({
       distribucion,
+      porTipo,
       rurales: {
         total,
         conActas,
