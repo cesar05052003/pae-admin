@@ -11,7 +11,24 @@ export async function GET(request: Request) {
     let where: Prisma.MunicipioWhereInput | undefined = undefined;
 
     if (tipo === 'ACTAS') {
-      where = { tipoUso: 'ACTAS' };
+      const municipios = await prisma.municipio.findMany({
+        where: { tipoUso: 'ACTAS' },
+        orderBy: { nombre: 'asc' },
+        include: {
+          _count: { select: { instituciones: true } },
+          instituciones: {
+            where: { actas: { none: {} } },
+            select: { id: true },
+          },
+        },
+      });
+      return NextResponse.json(municipios.map(m => ({
+        id: m.id,
+        nombre: m.nombre,
+        tipoUso: m.tipoUso,
+        conCae: m._count.instituciones - m.instituciones.length,
+        sinCae: m.instituciones.length,
+      })));
     } else if (tipo === 'PLANES') {
       where = { tipoUso: 'PLANES' };
     } else if (conActas === 'true') {

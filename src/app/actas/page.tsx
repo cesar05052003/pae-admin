@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
 import * as XLSX from 'xlsx';
 
-type Municipio = { id: number; nombre: string };
+type Municipio = { id: number; nombre: string; conCae: number; sinCae: number };
 type ImportResult = { municipios: number; instituciones: number; registros: number; errors: number; };
 
 export default function ActasMunicipiosPage() {
@@ -136,7 +136,17 @@ export default function ActasMunicipiosPage() {
               <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.8rem', fontWeight: 600, color: '#000000' }}>
                 {String(idx + 1).padStart(2, '0')}
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', margin: '1.5rem 0' }}>{m.nombre}</h3>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', margin: '1.5rem 0 0.75rem' }}>{m.nombre}</h3>
+              <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#dcfce7', borderRadius: '10px', padding: '0.3rem 0.65rem', minWidth: '48px' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1, color: '#16a34a' }}>{m.conCae}</span>
+                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: '#16a34a', marginTop: '2px' }}>con CAE</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: m.sinCae > 0 ? '#fee2e2' : '#f0fdf4', borderRadius: '10px', padding: '0.3rem 0.65rem', minWidth: '48px' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1, color: m.sinCae > 0 ? '#ef4444' : '#16a34a' }}>{m.sinCae > 0 ? m.sinCae : '✓'}</span>
+                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: m.sinCae > 0 ? '#ef4444' : '#16a34a', marginTop: '2px' }}>{m.sinCae > 0 ? 'sin CAE' : 'completo'}</span>
+                </div>
+              </div>
               <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
                 <button className="btn" style={{ background: '#f1f5f9', fontSize: '0.75rem', padding: '0.4rem 0.8rem' }} onClick={(e) => openEditMuni(e, m)}>Editar</button>
                 <button className="btn" style={{ background: '#fee2e2', color: '#dc2626', fontSize: '0.75rem', padding: '0.4rem 0.8rem' }} onClick={(e) => deleteMuni(e, m.id)}>Eliminar</button>
