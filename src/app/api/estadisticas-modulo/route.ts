@@ -3,6 +3,13 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
+const ZONA_LABELS: Record<string, string> = {
+  RURAL:        'Rural',
+  URBANA:       'Urbana',
+  RURAL_URBANA: 'Rural / Urbana',
+  URBANA_RURAL: 'Urbana / Rural',
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const modo = searchParams.get('modo'); // 'actas' | 'planes'
@@ -10,12 +17,25 @@ export async function GET(request: Request) {
   const tipoUso = modo === 'planes' ? 'PLANES' : 'ACTAS';
 
   try {
-    const [muniCount, instCount, instConRegistro] = await Promise.all([
+    const [muniCount, instCount, instConRegistro, porTipoRaw] = await Promise.all([
       prisma.municipio.count({ where: { tipoUso } }),
       prisma.institucion.count({ where: { municipio: { tipoUso } } }),
       modo === 'planes'
         ? prisma.institucion.count({ where: { municipio: { tipoUso }, planes: { some: {} } } })
         : prisma.institucion.count({ where: { municipio: { tipoUso }, actas: { some: {} } } }),
+      prisma.$queryRaw<Array<{ tipo: string; total: bigint; con_cae: bigint }>>`
+        SELECT
+          i."tipoInstitucion"::text AS tipo,
+          COUNT(*)                  AS total,
+          COUNT(CASE WHEN EXISTS (
+            SELECT 1 FROM "Acta" a WHERE a."institucionId" = i.id
+          ) THEN 1 END)             AS con_cae
+        FROM "Institucion" i
+        JOIN "Municipio" m ON i."municipioId" = m.id
+        WHERE m."tipoUso"::text = ${tipoUso}
+        GROUP BY i."tipoInstitucion"::text
+        ORDER BY i."tipoInstitucion"::text
+      `,
     ]);
 
     const cobertura = instCount > 0 ? Math.round((instConRegistro / instCount) * 100) : 0;
@@ -47,6 +67,19 @@ export async function GET(request: Request) {
       };
     });
 
+    const porTipo = porTipoRaw.map(r => {
+      const total  = Number(r.total);
+      const conCae = Number(r.con_cae);
+      return {
+        tipo:      r.tipo,
+        label:     ZONA_LABELS[r.tipo] ?? r.tipo,
+        total,
+        conCae,
+        sinCae:    total - conCae,
+        cobertura: total > 0 ? Math.round((conCae / total) * 100) : 0,
+      };
+    });
+
     return NextResponse.json({
       totales: {
         municipios: muniCount,
@@ -55,7 +88,8 @@ export async function GET(request: Request) {
         sin: instSinRegistro,
         cobertura
       },
-      municipiosData
+      municipiosData,
+      porTipo,
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch statistics' }, { status: 500 });
