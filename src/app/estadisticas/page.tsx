@@ -17,24 +17,14 @@ type Totales = {
 
 type MunicipioData = { nombre: string; actas: number; planes: number };
 
-type PorTipoItem = { tipo: string; label: string; total: number; conCae: number; sinCae: number; cobertura: number };
-
 type RuralesData = {
   distribucion: { zona: string; count: number }[];
-  porTipo: PorTipoItem[];
   rurales: {
     total: number;
     conActas: number; sinActas: number; coberturaActas: number;
     conPlanes: number; sinPlanes: number; coberturaPlanes: number;
   };
   municipiosData: { nombre: string; total: number; conActas: number; sinActas: number; conPlanes: number; sinPlanes: number }[];
-};
-
-const TIPO_COLORS: Record<string, string> = {
-  RURAL:        '#f59e0b',
-  URBANA:       '#8b5cf6',
-  RURAL_URBANA: '#3b82f6',
-  URBANA_RURAL: '#10b981',
 };
 
 const ZONA_PIE_COLORS: Record<string, string> = {
@@ -223,47 +213,6 @@ export default function EstadisticasDashboard() {
             </div>
           </div>
 
-          {/* ── CAE por Tipo de Institución ── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '2.5rem 0 1.5rem' }}>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.12)' }} />
-            <h2 style={{ fontSize: '1.3rem', color: 'var(--primary-color)', whiteSpace: 'nowrap', margin: 0 }}>
-              CAE por Tipo de Institución
-            </h2>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.12)' }} />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-            {rurales.porTipo.map(item => {
-              const color = TIPO_COLORS[item.tipo] ?? '#94a3b8';
-              return (
-                <div key={item.tipo} className="glass-panel" style={{ padding: '1.5rem' }}>
-                  <div style={{ borderLeft: `4px solid ${color}`, paddingLeft: '0.75rem', marginBottom: '1rem' }}>
-                    <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#374151', margin: 0 }}>{item.label}</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>{item.total} instituciones</p>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '1rem' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <p style={{ fontSize: '2rem', fontWeight: 700, color: '#16a34a', margin: 0 }}>{item.conCae}</p>
-                      <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>con CAE</p>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <p style={{ fontSize: '2rem', fontWeight: 700, color: '#dc2626', margin: 0 }}>{item.sinCae}</p>
-                      <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>sin CAE</p>
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#64748b', marginBottom: '4px' }}>
-                      <span>Cobertura</span>
-                      <span style={{ fontWeight: 700, color }}>{item.cobertura}%</span>
-                    </div>
-                    <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${item.cobertura}%`, background: color, borderRadius: '99px', transition: 'width 0.5s ease' }} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </>
       )}
     </div>
