@@ -168,13 +168,15 @@ export default function InformeSinCae() {
                     {m.totalInstituciones} institución{m.totalInstituciones !== 1 ? 'es' : ''} en total
                   </p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <span style={{ padding: '0.3rem 0.85rem', borderRadius: '99px', background: '#dcfce7', color: '#16a34a', fontSize: '0.8rem', fontWeight: 600 }}>
-                    {m.conCae} con CAE
-                  </span>
-                  <span style={{ padding: '0.3rem 0.85rem', borderRadius: '99px', background: m.sinCae > 0 ? '#fee2e2' : '#f0fdf4', color: m.sinCae > 0 ? '#ef4444' : '#16a34a', fontSize: '0.8rem', fontWeight: 600 }}>
-                    {m.sinCae > 0 ? `${m.sinCae} sin CAE` : 'Completo ✓'}
-                  </span>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '56px', background: '#dcfce7', borderRadius: '12px', padding: '0.35rem 0.75rem' }}>
+                    <span style={{ fontSize: '1.4rem', fontWeight: 800, lineHeight: 1, color: '#16a34a' }}>{m.conCae}</span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#16a34a', marginTop: '2px' }}>con CAE</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '56px', background: m.sinCae > 0 ? '#fee2e2' : '#f0fdf4', borderRadius: '12px', padding: '0.35rem 0.75rem' }}>
+                    <span style={{ fontSize: '1.4rem', fontWeight: 800, lineHeight: 1, color: m.sinCae > 0 ? '#ef4444' : '#16a34a' }}>{m.sinCae > 0 ? m.sinCae : '✓'}</span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 600, color: m.sinCae > 0 ? '#ef4444' : '#16a34a', marginTop: '2px' }}>{m.sinCae > 0 ? 'sin CAE' : 'completo'}</span>
+                  </div>
                 </div>
               </div>
 
