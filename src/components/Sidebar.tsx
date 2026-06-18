@@ -10,6 +10,7 @@ export default function Sidebar() {
     { label: 'Dashboard', href: '/' },
     { label: 'Municipios', href: '/municipios' },
     { label: 'Instituciones', href: '/instituciones' },
+    { label: 'Población Indígena', href: '/poblacion-indigena' },
     { label: 'Actas', href: '/actas' },
     { label: 'Planes Pedagógicos', href: '/planes' },
     { label: 'Anotaciones', href: '/anotaciones' },

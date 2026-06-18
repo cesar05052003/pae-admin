@@ -97,3 +97,41 @@ model Anotacion {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
+
+// Models for Población Indígena (separated from Actas)
+model PoblacionIndigenaMunicipio {
+  id              Int                                @id @default(autoincrement())
+  nombre          String
+  instituciones   PoblacionIndigenaInstitucion[]
+  registros       PoblacionIndigenaRegistro[]
+  createdAt       DateTime                            @default(now())
+  updatedAt       DateTime                            @updatedAt
+
+  @@unique([nombre])
+}
+
+model PoblacionIndigenaInstitucion {
+  id              Int                 @id @default(autoincrement())
+  nombre          String
+  municipioId     Int
+  tipoInstitucion TipoInstitucion     @default(URBANA)
+  municipio       PoblacionIndigenaMunicipio @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  registros       PoblacionIndigenaRegistro[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@unique([nombre, municipioId])
+}
+
+model PoblacionIndigenaRegistro {
+  id              Int       @id @default(autoincrement())
+  fecha           DateTime  @default(now())
+  descripcion     String?
+  archivoUrl      String?
+  municipioId     Int
+  institucionId   Int
+  municipio       PoblacionIndigenaMunicipio   @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  institucion     PoblacionIndigenaInstitucion @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}

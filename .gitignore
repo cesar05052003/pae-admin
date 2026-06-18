@@ -44,3 +44,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Archivos temporales de depuración
+tmp-*.js
+verify-*.js
+prisma-node-processes.txt
+
+# Archivos subidos por usuarios
+public/uploads/*
+
