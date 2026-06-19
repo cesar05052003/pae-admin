@@ -7,8 +7,8 @@ type Institucion = { id: number; nombre: string; tipoInstitucion?: string };
 type RouteParams = { params: Promise<{ municipioId: string }> };
 
 const ZONA_LABELS: Record<string, string> = { RURAL: 'Rural', URBANA: 'Urbana', RURAL_URBANA: 'Rural / Urbana', URBANA_RURAL: 'Urbana / Rural' };
-const ZONA_BG: Record<string, string>     = { RURAL: '#fef3c7', URBANA: '#ede9fe', RURAL_URBANA: '#dbeafe', URBANA_RURAL: '#d1fae5' };
-const ZONA_COLOR: Record<string, string>  = { RURAL: '#b45309', URBANA: '#6d28d9', RURAL_URBANA: '#1d4ed8', URBANA_RURAL: '#065f46' };
+const ZONA_BG: Record<string, string>     = { RURAL: '#fdf0d8', URBANA: '#fde8d0', RURAL_URBANA: '#e8f4e0', URBANA_RURAL: '#f5e8d0' };
+const ZONA_COLOR: Record<string, string>  = { RURAL: '#A06810', URBANA: '#C8621A', RURAL_URBANA: '#5A7E28', URBANA_RURAL: '#8B3A12' };
 
 export default function PIInstitucionesPage(props: RouteParams) {
   const params = use(props.params);
@@ -45,36 +45,57 @@ export default function PIInstitucionesPage(props: RouteParams) {
 
   const filteredInstituciones = instituciones.filter(i => i.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const PI = {
+    maroon: '#3D0E18', orange: '#C8621A', amber: '#E8A020',
+    green: '#5A7E28', cream: '#F5E8D0', rust: '#8B3A12', darkAmber: '#A06810',
+  };
+
   return (
-    <div className="container" style={{ padding: 0 }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <Link href="/poblacion-indigena" className="btn" style={{ background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem' }}>← Regresar</Link>
-          <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Instituciones en {municipioNombre}</h1>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <input className="input-field" placeholder="Buscar institución..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ minWidth: '220px', maxWidth: '320px' }} />
-          <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateInst}>+ Nueva Institución</button>
+    <div style={{ padding: 0 }}>
+      {/* Hero banner */}
+      <div style={{
+        backgroundImage: 'url(/fondo-indigena.jpg)',
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        backgroundColor: PI.maroon, borderRadius: '16px',
+        marginBottom: '2rem', position: 'relative', overflow: 'hidden',
+        minHeight: '160px', display: 'flex', flexDirection: 'column',
+        justifyContent: 'flex-end', padding: '1.5rem 2rem',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(61,14,24,0.92) 40%, rgba(61,14,24,0.55) 100%)' }} />
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <Link href="/poblacion-indigena" className="btn" style={{ background: 'rgba(245,232,208,0.18)', color: PI.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
+            <h1 style={{ fontSize: '1.8rem', color: PI.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Instituciones en {municipioNombre}</h1>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <input className="input-field" placeholder="Buscar institución..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ minWidth: '220px', maxWidth: '320px', background: 'rgba(245,232,208,0.15)', border: `1px solid rgba(245,232,208,0.4)`, color: PI.cream }} />
+            <button className="btn" style={{ background: PI.green, color: '#fff', fontWeight: 600 }} onClick={openCreateInst}>+ Nueva Institución</button>
+          </div>
         </div>
       </div>
 
       {loading ? <p>Cargando instituciones...</p> : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
           {filteredInstituciones.map((i, idx) => (
-            <Link key={i.id} href={`/poblacion-indigena/${municipioId}/${i.id}`} className="glass-panel" style={{ display: 'block', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.75rem', fontWeight: 600, color: '#000000' }}>{String(idx + 1).padStart(2, '0')}</div>
+            <Link key={i.id} href={`/poblacion-indigena/${municipioId}/${i.id}`} style={{
+              display: 'block', textDecoration: 'none', color: 'inherit', position: 'relative',
+              background: 'linear-gradient(135deg, #fdf6ee 0%, #faebd7 100%)',
+              border: `2px solid ${PI.amber}55`, borderRadius: '14px',
+              padding: '1.25rem', boxShadow: `0 4px 18px rgba(61,14,24,0.10)`,
+            }}>
+              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.75rem', fontWeight: 700, color: PI.rust }}>{String(idx + 1).padStart(2, '0')}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '1rem', marginBottom: '0.5rem' }}>
-                <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0, flex: 1 }}>{i.nombre}</h3>
+                <h3 style={{ fontSize: '1.1rem', color: PI.maroon, margin: 0, flex: 1, fontWeight: 700 }}>{i.nombre}</h3>
                 {i.tipoInstitucion && (
-                  <span style={{ marginLeft: '0.5rem', padding: '0.15rem 0.5rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', background: ZONA_BG[i.tipoInstitucion] ?? '#f1f5f9', color: ZONA_COLOR[i.tipoInstitucion] ?? '#475569' }}>
+                  <span style={{ marginLeft: '0.5rem', padding: '0.2rem 0.6rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', background: ZONA_BG[i.tipoInstitucion] ?? '#fdf0d8', color: ZONA_COLOR[i.tipoInstitucion] ?? PI.rust, border: `1px solid ${ZONA_COLOR[i.tipoInstitucion] ?? PI.rust}44` }}>
                     {ZONA_LABELS[i.tipoInstitucion] ?? i.tipoInstitucion}
                   </span>
                 )}
               </div>
-              <div style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: '#94a3b8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Ver registros</span>
+              <div style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: PI.darkAmber, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Ver registros →</span>
                 <div style={{ display: 'flex', gap: '0.4rem' }}>
-                  <button className="btn" style={{ background: '#f1f5f9', fontSize: '0.7rem', padding: '0.2rem 0.5rem' }} onClick={(e) => openEditInst(e, i)}>Editar</button>
+                  <button className="btn" style={{ background: `${PI.amber}22`, color: PI.rust, border: `1px solid ${PI.amber}66`, fontSize: '0.7rem', padding: '0.2rem 0.5rem' }} onClick={(e) => openEditInst(e, i)}>Editar</button>
                   <button className="btn" style={{ background: '#fee2e2', color: '#dc2626', fontSize: '0.7rem', padding: '0.2rem 0.5rem' }} onClick={(e) => deleteInst(e, i.id)}>Eliminar</button>
                 </div>
               </div>

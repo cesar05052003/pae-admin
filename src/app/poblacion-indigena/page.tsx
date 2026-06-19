@@ -83,39 +83,75 @@ export default function PoblacionIndigenaPage() {
 
   const filteredMunicipios = municipios.filter(m => m.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const PI_COLORS = {
+    maroon: '#3D0E18',
+    orange: '#C8621A',
+    amber: '#E8A020',
+    green: '#5A7E28',
+    cream: '#F5E8D0',
+    rust: '#8B3A12',
+    darkAmber: '#A06810',
+  };
+
   return (
-    <div className="container" style={{ padding: 0 }}>
-      <div style={{ marginBottom: '1rem' }}>
-        <Link href="/" className="btn" style={{ background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>← Regresar</Link>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Población Indígena: Seleccionar Municipio</h1>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <input className="input-field" placeholder="Buscar municipio..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ minWidth: '220px', maxWidth: '320px' }} />
-          <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel (Registros)</button>
-          <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateMuni}>+ Nuevo Municipio</button>
-          <button className="btn btn-primary" onClick={() => router.push('/poblacion-indigena/estadisticas')}>Ver Estadísticas</button>
+    <div style={{ padding: 0 }}>
+      {/* Hero banner con fondo */}
+      <div style={{
+        backgroundImage: 'url(/fondo-indigena.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundColor: PI_COLORS.maroon,
+        borderRadius: '16px',
+        marginBottom: '2rem',
+        position: 'relative',
+        overflow: 'hidden',
+        minHeight: '220px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        padding: '2rem',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(61,14,24,0.92) 40%, rgba(61,14,24,0.55) 100%)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <Link href="/" className="btn" style={{ background: 'rgba(245,232,208,0.18)', color: PI_COLORS.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
+          <h1 style={{ fontSize: '2rem', color: PI_COLORS.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Población Indígena: Seleccionar Municipio</h1>
         </div>
+      </div>
+
+      {/* Barra de acciones */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <input className="input-field" placeholder="Buscar municipio..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ minWidth: '220px', maxWidth: '320px' }} />
+        <button className="btn" style={{ background: PI_COLORS.cream, color: PI_COLORS.maroon, fontWeight: 600 }} onClick={() => setIsImportModalOpen(true)}>Importar Excel (Registros)</button>
+        <button className="btn" style={{ background: PI_COLORS.green, color: '#fff', fontWeight: 600 }} onClick={openCreateMuni}>+ Nuevo Municipio</button>
+        <button className="btn" style={{ background: PI_COLORS.orange, color: '#fff', fontWeight: 600 }} onClick={() => router.push('/poblacion-indigena/estadisticas')}>Ver Estadísticas</button>
       </div>
 
       {loading ? <p>Cargando municipios...</p> : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {filteredMunicipios.map((m, idx) => (
-            <Link key={m.id} href={`/poblacion-indigena/${m.id}`} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.5rem', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.8rem', fontWeight: 600, color: '#000000' }}>{String(idx + 1).padStart(2, '0')}</div>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', margin: '1.5rem 0 0.75rem' }}>{m.nombre}</h3>
+            <Link key={m.id} href={`/poblacion-indigena/${m.id}`} style={{
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              padding: '1.5rem', textDecoration: 'none', color: 'inherit', position: 'relative',
+              background: `linear-gradient(135deg, #fdf6ee 0%, #faebd7 100%)`,
+              border: `2px solid ${PI_COLORS.amber}55`,
+              borderRadius: '14px',
+              boxShadow: `0 4px 18px rgba(61,14,24,0.10)`,
+              transition: 'transform 0.15s, box-shadow 0.15s',
+            }}>
+              <div style={{ position: 'absolute', top: '10px', left: '15px', fontSize: '0.8rem', fontWeight: 700, color: PI_COLORS.rust }}>{String(idx + 1).padStart(2, '0')}</div>
+              <h3 style={{ fontSize: '1.2rem', color: PI_COLORS.maroon, margin: '1.5rem 0 0.75rem', fontWeight: 700 }}>{m.nombre}</h3>
               <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#dcfce7', borderRadius: '10px', padding: '0.3rem 0.65rem', minWidth: '48px' }}>
-                  <span style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1, color: '#16a34a' }}>{m.registros}</span>
-                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: '#16a34a', marginTop: '2px' }}>Registros</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: `${PI_COLORS.green}22`, border: `1.5px solid ${PI_COLORS.green}55`, borderRadius: '10px', padding: '0.3rem 0.65rem', minWidth: '56px' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1, color: PI_COLORS.green }}>{m.registros}</span>
+                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: PI_COLORS.green, marginTop: '2px' }}>Registros</span>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#f0fdf4', borderRadius: '10px', padding: '0.3rem 0.65rem', minWidth: '48px' }}>
-                  <span style={{ fontSize: '1.0rem', fontWeight: 700, lineHeight: 1, color: '#0f766e' }}>{m.totalInstituciones}</span>
-                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: '#0f766e', marginTop: '2px' }}>Instituciones</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: `${PI_COLORS.amber}22`, border: `1.5px solid ${PI_COLORS.amber}66`, borderRadius: '10px', padding: '0.3rem 0.65rem', minWidth: '56px' }}>
+                  <span style={{ fontSize: '1.0rem', fontWeight: 700, lineHeight: 1, color: PI_COLORS.darkAmber }}>{m.totalInstituciones}</span>
+                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: PI_COLORS.darkAmber, marginTop: '2px' }}>Instituciones</span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                <button className="btn" style={{ background: '#f1f5f9', fontSize: '0.75rem', padding: '0.4rem 0.8rem' }} onClick={(e) => openEditMuni(e, m)}>Editar</button>
+                <button className="btn" style={{ background: `${PI_COLORS.amber}22`, color: PI_COLORS.rust, border: `1px solid ${PI_COLORS.amber}66`, fontSize: '0.75rem', padding: '0.4rem 0.8rem' }} onClick={(e) => openEditMuni(e, m)}>Editar</button>
                 <button className="btn" style={{ background: '#fee2e2', color: '#dc2626', fontSize: '0.75rem', padding: '0.4rem 0.8rem' }} onClick={(e) => deleteMuni(e, m.id)}>Eliminar</button>
               </div>
             </Link>

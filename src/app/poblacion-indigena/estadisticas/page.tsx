@@ -5,7 +5,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
 
-const COLORS = ['#f59e0b', '#8b5cf6', '#3b82f6', '#10b981', '#ef4444', '#ec4899'];
+const COLORS = ['#C8621A', '#E8A020', '#5A7E28', '#8B3A12', '#D4962A', '#3D6B1C'];
 const ZONA_LABELS: Record<string, string> = { RURAL: 'Rural', URBANA: 'Urbana' };
 
 type Stats = {
@@ -36,33 +36,61 @@ export default function EstadisticasPI() {
 
   const { totales, distribucion, distribucionTipo, municipiosData, registrosPorMes } = stats;
 
+  const PI = {
+    maroon: '#3D0E18',
+    orange: '#C8621A',
+    amber: '#E8A020',
+    green: '#5A7E28',
+    cream: '#F5E8D0',
+    rust: '#8B3A12',
+    darkAmber: '#A06810',
+  };
+
   return (
-    <div className="container" style={{ padding: 0 }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <Link href="/poblacion-indigena" className="btn" style={{ background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem' }}>← Regresar</Link>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Estadísticas — Población Indígena</h1>
+    <div style={{ padding: 0 }}>
+      {/* Hero banner */}
+      <div style={{
+        backgroundImage: 'url(/fondo-indigena.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundColor: PI.maroon,
+        borderRadius: '16px',
+        marginBottom: '2rem',
+        position: 'relative',
+        overflow: 'hidden',
+        minHeight: '180px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        padding: '2rem',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(61,14,24,0.92) 40%, rgba(61,14,24,0.55) 100%)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <Link href="/poblacion-indigena" className="btn" style={{ background: 'rgba(245,232,208,0.18)', color: PI.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
+          <h1 style={{ fontSize: '2rem', color: PI.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Estadísticas — Población Indígena</h1>
+        </div>
       </div>
 
       {/* Totales */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Municipios</p>
-          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--primary-color)' }}>{totales.totalMunicipios}</p>
+        <div style={{ padding: '1.5rem', textAlign: 'center', background: `linear-gradient(135deg, ${PI.maroon} 0%, #5C1525 100%)`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(61,14,24,0.25)` }}>
+          <p style={{ color: `${PI.cream}bb`, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Municipios</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: PI.amber, margin: 0 }}>{totales.totalMunicipios}</p>
         </div>
-        <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Instituciones</p>
-          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: '#8b5cf6' }}>{totales.totalInstituciones}</p>
+        <div style={{ padding: '1.5rem', textAlign: 'center', background: `linear-gradient(135deg, ${PI.rust} 0%, #C8621A 100%)`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(139,58,18,0.25)` }}>
+          <p style={{ color: `${PI.cream}bb`, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Instituciones</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: PI.cream, margin: 0 }}>{totales.totalInstituciones}</p>
         </div>
-        <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Registros</p>
-          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: '#10b981' }}>{totales.totalRegistros}</p>
+        <div style={{ padding: '1.5rem', textAlign: 'center', background: `linear-gradient(135deg, #3D6B1C 0%, ${PI.green} 100%)`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(90,126,40,0.25)` }}>
+          <p style={{ color: `${PI.cream}bb`, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Registros</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: PI.cream, margin: 0 }}>{totales.totalRegistros}</p>
         </div>
       </div>
 
-      {/* Distribución de Instituciones por Tipo */}
+      {/* Distribución */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1rem' }}>Distribución por Tipo de Institución</h3>
+        <div style={{ padding: '1.5rem', background: '#fdf6ee', border: `2px solid ${PI.amber}44`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(61,14,24,0.08)` }}>
+          <h3 style={{ marginTop: 0, marginBottom: '1rem', color: PI.maroon }}>Distribución por Tipo de Institución</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie data={distribucionTipo} dataKey="count" nameKey="tipo" cx="50%" cy="50%" outerRadius={80} label>
@@ -73,7 +101,7 @@ export default function EstadisticasPI() {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#64748b' }}>
+          <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: PI.rust }}>
             {distribucionTipo.map((d, i) => (
               <p key={d.tipo} style={{ margin: '0.25rem 0' }}>
                 <span style={{ display: 'inline-block', width: '12px', height: '12px', background: COLORS[i % COLORS.length], borderRadius: '2px', marginRight: '0.5rem' }} />
@@ -83,25 +111,25 @@ export default function EstadisticasPI() {
           </div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1rem' }}>Resumen de Distribución</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ padding: '1.5rem', background: '#fdf6ee', border: `2px solid ${PI.amber}44`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(61,14,24,0.08)` }}>
+          <h3 style={{ marginTop: 0, marginBottom: '1.5rem', color: PI.maroon }}>Resumen de Distribución</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem', color: PI.rust }}>
                 <span>Rural</span>
                 <b>{distribucion.rurales}</b>
               </div>
-              <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '99px' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, (distribucion.rurales / totales.totalInstituciones) * 100)}%`, background: '#f59e0b', borderRadius: '99px' }} />
+              <div style={{ height: '10px', background: `${PI.amber}33`, borderRadius: '99px' }}>
+                <div style={{ height: '100%', width: `${Math.min(100, (distribucion.rurales / totales.totalInstituciones) * 100)}%`, background: PI.amber, borderRadius: '99px' }} />
               </div>
             </div>
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem', color: PI.rust }}>
                 <span>Urbana</span>
                 <b>{distribucion.urbanas}</b>
               </div>
-              <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '99px' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, (distribucion.urbanas / totales.totalInstituciones) * 100)}%`, background: '#8b5cf6', borderRadius: '99px' }} />
+              <div style={{ height: '10px', background: `${PI.orange}33`, borderRadius: '99px' }}>
+                <div style={{ height: '100%', width: `${Math.min(100, (distribucion.urbanas / totales.totalInstituciones) * 100)}%`, background: PI.orange, borderRadius: '99px' }} />
               </div>
             </div>
           </div>
@@ -110,15 +138,15 @@ export default function EstadisticasPI() {
 
       {/* Top Municipios */}
       {municipiosData.length > 0 && (
-        <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1rem' }}>Municipios con Más Registros</h3>
+        <div style={{ padding: '1.5rem', marginBottom: '2rem', background: '#fdf6ee', border: `2px solid ${PI.amber}44`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(61,14,24,0.08)` }}>
+          <h3 style={{ marginTop: 0, marginBottom: '1rem', color: PI.maroon }}>Municipios con Más Registros</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={municipiosData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="nombre" angle={-45} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="registros" fill="var(--primary-color)" />
+              <CartesianGrid strokeDasharray="3 3" stroke={`${PI.amber}55`} />
+              <XAxis dataKey="nombre" angle={-45} textAnchor="end" height={80} tick={{ fill: PI.rust }} />
+              <YAxis tick={{ fill: PI.rust }} />
+              <Tooltip contentStyle={{ background: '#fdf6ee', border: `1px solid ${PI.amber}66`, color: PI.maroon }} />
+              <Bar dataKey="registros" fill={PI.orange} radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
