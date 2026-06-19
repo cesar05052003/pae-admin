@@ -52,25 +52,23 @@ export default function PIInstitucionesPage(props: RouteParams) {
 
   return (
     <div style={{ padding: 0 }}>
-      {/* Hero banner */}
+      {/* Título */}
       <div style={{
-        backgroundImage: 'url(/fondo-indigena.jpg)',
-        backgroundSize: 'cover', backgroundPosition: 'center',
-        backgroundColor: PI.maroon, borderRadius: '16px',
-        marginBottom: '2rem', position: 'relative', overflow: 'hidden',
-        minHeight: '160px', display: 'flex', flexDirection: 'column',
-        justifyContent: 'flex-end', padding: '1.5rem 2rem',
+        background: 'rgba(61,14,24,0.75)',
+        backdropFilter: 'blur(8px)',
+        borderRadius: '16px',
+        marginBottom: '2rem',
+        padding: '1.75rem 2rem',
+        border: '1px solid rgba(232,160,32,0.3)',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem',
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(61,14,24,0.92) 40%, rgba(61,14,24,0.55) 100%)' }} />
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <Link href="/poblacion-indigena" className="btn" style={{ background: 'rgba(245,232,208,0.18)', color: PI.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
-            <h1 style={{ fontSize: '1.8rem', color: PI.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Instituciones en {municipioNombre}</h1>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <input className="input-field" placeholder="Buscar institución..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ minWidth: '220px', maxWidth: '320px', background: 'rgba(245,232,208,0.15)', border: `1px solid rgba(245,232,208,0.4)`, color: PI.cream }} />
-            <button className="btn" style={{ background: PI.green, color: '#fff', fontWeight: 600 }} onClick={openCreateInst}>+ Nueva Institución</button>
-          </div>
+        <div>
+          <Link href="/poblacion-indigena" className="btn" style={{ background: 'rgba(245,232,208,0.15)', color: PI.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
+          <h1 style={{ fontSize: '1.8rem', color: PI.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Instituciones en {municipioNombre}</h1>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input className="input-field" placeholder="Buscar institución..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ minWidth: '220px', maxWidth: '320px' }} />
+          <button className="btn" style={{ background: PI.green, color: '#fff', fontWeight: 600 }} onClick={openCreateInst}>+ Nueva Institución</button>
         </div>
       </div>
 

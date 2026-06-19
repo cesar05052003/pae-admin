@@ -5,9 +5,13 @@ import { usePathname } from 'next/navigation';
 export default function Header() {
   const pathname = usePathname();
   const showInformeButtons = pathname === '/actas';
+  const isIndigena = pathname.startsWith('/poblacion-indigena');
+
+  const headerBg = isIndigena ? 'rgba(61,14,24,0.92)' : 'rgba(255, 165, 100, 0.9)';
+  const headerBorder = isIndigena ? '1px solid rgba(232,160,32,0.35)' : '1px solid rgba(255, 127, 39, 0.6)';
 
   return (
-    <header style={{ padding: '1rem 2rem', background: 'rgba(255, 165, 100, 0.9)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255, 127, 39, 0.6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+    <header style={{ padding: '1rem 2rem', background: headerBg, backdropFilter: 'blur(10px)', borderBottom: headerBorder, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
       <Link href="/" className="header-brand">
         <img src="/BOTON-LOGO.png" alt="Gobernación de Córdoba" className="app-logo" />
       </Link>
