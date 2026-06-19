@@ -50,12 +50,12 @@ export default function EstadisticasPI() {
     <div style={{ padding: 0 }}>
       {/* Título */}
       <div style={{
-        background: 'rgba(61,14,24,0.75)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(255,255,255,0.14)',
+        backdropFilter: 'blur(10px)',
         borderRadius: '16px',
         marginBottom: '2rem',
         padding: '1.75rem 2rem',
-        border: '1px solid rgba(232,160,32,0.3)',
+        border: '1px solid rgba(232,160,32,0.4)',
       }}>
         <Link href="/poblacion-indigena" className="btn" style={{ background: 'rgba(245,232,208,0.15)', color: PI.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
         <h1 style={{ fontSize: '2rem', color: PI.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Estadísticas — Población Indígena</h1>
@@ -63,9 +63,9 @@ export default function EstadisticasPI() {
 
       {/* Totales */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div style={{ padding: '1.5rem', textAlign: 'center', background: `linear-gradient(135deg, ${PI.maroon} 0%, #5C1525 100%)`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(61,14,24,0.25)` }}>
-          <p style={{ color: `${PI.cream}bb`, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Municipios</p>
-          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: PI.amber, margin: 0 }}>{totales.totalMunicipios}</p>
+        <div style={{ padding: '1.5rem', textAlign: 'center', background: 'rgba(253,246,238,0.92)', borderRadius: '14px', boxShadow: `0 4px 18px rgba(61,14,24,0.18)`, border: `2px solid ${PI.amber}55`, backdropFilter: 'blur(8px)' }}>
+          <p style={{ color: PI.rust, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Municipios</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 700, color: PI.maroon, margin: 0 }}>{totales.totalMunicipios}</p>
         </div>
         <div style={{ padding: '1.5rem', textAlign: 'center', background: `linear-gradient(135deg, ${PI.rust} 0%, #C8621A 100%)`, borderRadius: '14px', boxShadow: `0 4px 18px rgba(139,58,18,0.25)` }}>
           <p style={{ color: `${PI.cream}bb`, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Instituciones</p>

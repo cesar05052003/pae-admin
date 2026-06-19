@@ -54,12 +54,12 @@ export default function PIInstitucionesPage(props: RouteParams) {
     <div style={{ padding: 0 }}>
       {/* Título */}
       <div style={{
-        background: 'rgba(61,14,24,0.75)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(255,255,255,0.14)',
+        backdropFilter: 'blur(10px)',
         borderRadius: '16px',
         marginBottom: '2rem',
         padding: '1.75rem 2rem',
-        border: '1px solid rgba(232,160,32,0.3)',
+        border: '1px solid rgba(232,160,32,0.4)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem',
       }}>
         <div>

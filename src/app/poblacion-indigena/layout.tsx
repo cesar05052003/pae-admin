@@ -11,7 +11,7 @@ export default function PoblacionIndigenaLayout({ children }: { children: React.
     const prevRepeat = body.style.backgroundRepeat;
     const prevColor = body.style.backgroundColor;
 
-    body.style.backgroundImage = `linear-gradient(rgba(61,14,24,0.45), rgba(61,14,24,0.45)), url('/fondo-indigena.jpg')`;
+    body.style.backgroundImage = `linear-gradient(rgba(61,14,24,0.18), rgba(61,14,24,0.18)), url('/fondo-indigena.jpg')`;
     body.style.backgroundSize = 'cover';
     body.style.backgroundPosition = 'center';
     body.style.backgroundAttachment = 'fixed';

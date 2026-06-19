@@ -97,12 +97,12 @@ export default function PoblacionIndigenaPage() {
     <div style={{ padding: 0 }}>
       {/* Título */}
       <div style={{
-        background: 'rgba(61,14,24,0.75)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(255,255,255,0.14)',
+        backdropFilter: 'blur(10px)',
         borderRadius: '16px',
         marginBottom: '2rem',
         padding: '1.75rem 2rem',
-        border: '1px solid rgba(232,160,32,0.3)',
+        border: '1px solid rgba(232,160,32,0.4)',
       }}>
         <Link href="/" className="btn" style={{ background: 'rgba(245,232,208,0.15)', color: PI_COLORS.cream, border: `1px solid rgba(245,232,208,0.35)`, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem', backdropFilter: 'blur(6px)' }}>← Regresar</Link>
         <h1 style={{ fontSize: '2rem', color: PI_COLORS.cream, margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Población Indígena: Seleccionar Municipio</h1>
