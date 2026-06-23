@@ -27,6 +27,9 @@ export async function POST(request: Request) {
     if (!institucion) return NextResponse.json({ error: 'Institución no encontrada' }, { status: 404 });
     if (institucion.municipioId !== municipioId) return NextResponse.json({ error: 'El municipio no coincide con la institución' }, { status: 400 });
 
+    const existing = await prisma.poblacionIndigenaRegistro.findFirst({ where: { institucionId } });
+    if (existing) return NextResponse.json({ error: 'Esta institución ya tiene un registro. Edita el existente.' }, { status: 400 });
+
     const registro = await prisma.poblacionIndigenaRegistro.create({ 
       data: { 
         descripcion: json.descripcion, 

@@ -119,7 +119,7 @@ export default function PIRegistrosPage(props: RouteParams) {
         </div>
         <div>
           <button className="btn" style={{ background: '#e2e8f0', marginRight: '1rem' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel</button>
-          <button className="btn btn-primary" onClick={openCreate}>+ Registrar</button>
+          {registros.length === 0 && <button className="btn btn-primary" onClick={openCreate}>+ Registrar</button>}
         </div>
       </div>
 
