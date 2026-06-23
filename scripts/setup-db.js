@@ -322,6 +322,25 @@ const ZONE_DATA = [
 ];
 
 async function main() {
+  // 0. Create PoblacionIndigenaSeguimiento table if not exists
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "PoblacionIndigenaSeguimiento" (
+      id SERIAL PRIMARY KEY,
+      fecha TIMESTAMPTZ NOT NULL DEFAULT now(),
+      descripcion TEXT,
+      "archivoUrl" TEXT,
+      "municipioId" INT NOT NULL,
+      "institucionId" INT NOT NULL,
+      "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+      "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+      CONSTRAINT fk_pi_seg_muni FOREIGN KEY ("municipioId") REFERENCES "PoblacionIndigenaMunicipio"(id) ON DELETE CASCADE,
+      CONSTRAINT fk_pi_seg_inst FOREIGN KEY ("institucionId") REFERENCES "PoblacionIndigenaInstitucion"(id) ON DELETE CASCADE
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS idx_pi_seguimiento_institucion ON "PoblacionIndigenaSeguimiento"("institucionId")`);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS idx_pi_seguimiento_municipio ON "PoblacionIndigenaSeguimiento"("municipioId")`);
+  console.log('PoblacionIndigenaSeguimiento table: OK');
+
   // 1. Add enum values (idempotent via IF NOT EXISTS)
   await prisma.$executeRawUnsafe(
     `ALTER TYPE "TipoInstitucion" ADD VALUE IF NOT EXISTS 'RURAL_URBANA'`

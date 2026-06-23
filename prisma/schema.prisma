@@ -104,6 +104,7 @@ model PoblacionIndigenaMunicipio {
   nombre          String
   instituciones   PoblacionIndigenaInstitucion[]
   registros       PoblacionIndigenaRegistro[]
+  seguimientos    PoblacionIndigenaSeguimiento[]
   createdAt       DateTime                            @default(now())
   updatedAt       DateTime                            @updatedAt
 
@@ -117,6 +118,7 @@ model PoblacionIndigenaInstitucion {
   tipoInstitucion TipoInstitucion     @default(URBANA)
   municipio       PoblacionIndigenaMunicipio @relation(fields: [municipioId], references: [id], onDelete: Cascade)
   registros       PoblacionIndigenaRegistro[]
+  seguimientos    PoblacionIndigenaSeguimiento[]
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
@@ -124,6 +126,19 @@ model PoblacionIndigenaInstitucion {
 }
 
 model PoblacionIndigenaRegistro {
+  id              Int       @id @default(autoincrement())
+  fecha           DateTime  @default(now())
+  descripcion     String?
+  archivoUrl      String?
+  municipioId     Int
+  institucionId   Int
+  municipio       PoblacionIndigenaMunicipio   @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  institucion     PoblacionIndigenaInstitucion @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model PoblacionIndigenaSeguimiento {
   id              Int       @id @default(autoincrement())
   fecha           DateTime  @default(now())
   descripcion     String?
