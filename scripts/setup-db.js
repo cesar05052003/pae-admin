@@ -322,7 +322,26 @@ const ZONE_DATA = [
 ];
 
 async function main() {
-  // 0. Create PoblacionIndigenaSeguimiento table if not exists
+  // 0a. Create Seguimiento table (regular institutions) if not exists
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Seguimiento" (
+      id SERIAL PRIMARY KEY,
+      fecha TIMESTAMPTZ NOT NULL DEFAULT now(),
+      descripcion TEXT,
+      "archivoUrl" TEXT,
+      "municipioId" INT NOT NULL,
+      "institucionId" INT NOT NULL,
+      "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+      "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+      CONSTRAINT fk_seg_muni FOREIGN KEY ("municipioId") REFERENCES "Municipio"(id) ON DELETE CASCADE,
+      CONSTRAINT fk_seg_inst FOREIGN KEY ("institucionId") REFERENCES "Institucion"(id) ON DELETE CASCADE
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS idx_seguimiento_institucion ON "Seguimiento"("institucionId")`);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS idx_seguimiento_municipio ON "Seguimiento"("municipioId")`);
+  console.log('Seguimiento table: OK');
+
+  // 0b. Create PoblacionIndigenaSeguimiento table if not exists
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "PoblacionIndigenaSeguimiento" (
       id SERIAL PRIMARY KEY,

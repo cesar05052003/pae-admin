@@ -31,6 +31,7 @@ model Municipio {
   actas           Acta[]
   planes          PlanPedagogico[]
   anotaciones     Anotacion[]
+  seguimientos    Seguimiento[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
@@ -46,6 +47,7 @@ model Institucion {
   actas           Acta[]
   planes          PlanPedagogico[]
   anotaciones     Anotacion[]
+  seguimientos    Seguimiento[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
@@ -94,6 +96,19 @@ model Anotacion {
   acta            Acta?             @relation(fields: [actaId], references: [id], onDelete: SetNull)
   plan            PlanPedagogico?   @relation(fields: [planId], references: [id], onDelete: SetNull)
 
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Seguimiento {
+  id              Int               @id @default(autoincrement())
+  fecha           DateTime          @default(now())
+  descripcion     String?
+  archivoUrl      String?
+  municipioId     Int
+  institucionId   Int
+  municipio       Municipio         @relation(fields: [municipioId], references: [id], onDelete: Cascade)
+  institucion     Institucion       @relation(fields: [institucionId], references: [id], onDelete: Cascade)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
