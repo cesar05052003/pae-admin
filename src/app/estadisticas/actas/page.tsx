@@ -28,7 +28,7 @@ export default function EstadisticasActas() {
       .then(([actas, pi]) => {
         // Combinar totales
         const instituciones = (actas.totales?.instituciones ?? 0) + (pi.totales?.totalInstituciones ?? 0);
-        const con = (actas.totales?.con ?? 0) + (pi.instConRegistroPI ?? 0);
+        const con = (actas.totales?.con ?? 0) + (pi.totales?.totalRegistros ?? 0);
         const sin = instituciones - con;
         const cobertura = instituciones > 0 ? Math.round((con / instituciones) * 100) : 0;
 
