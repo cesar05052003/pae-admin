@@ -33,7 +33,7 @@ export default function EstadisticasActas() {
         const cobertura = instituciones > 0 ? Math.round((con / instituciones) * 100) : 0;
 
         setTotales({
-          municipios: (actas.totales?.municipios ?? 0) + (pi.totales?.totalMunicipios ?? 0),
+          municipios: actas.totales?.municipios ?? 0,
           instituciones,
           con,
           sin,
