@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   if (!municipioId) return NextResponse.json([], { status: 200 });
 
   try {
-    const instituciones = await prisma.poblacionIndigenaInstitucion.findMany({ where: { municipioId: Number(municipioId) }, orderBy: { nombre: 'asc' } });
+    const instituciones = await prisma.poblacionIndigenaInstitucion.findMany({ where: { municipioId: Number(municipioId) }, include: { _count: { select: { registros: true } } }, orderBy: { nombre: 'asc' } });
     return NextResponse.json(instituciones);
   } catch (error) {
     return NextResponse.json({ error: 'Error obteniendo instituciones' }, { status: 500 });

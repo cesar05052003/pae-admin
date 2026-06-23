@@ -3,7 +3,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import Modal from '@/components/Modal';
 
-type Institucion = { id: number; nombre: string; tipoInstitucion?: string };
+type Institucion = { id: number; nombre: string; tipoInstitucion?: string; _count?: { registros: number } };
 type RouteParams = { params: Promise<{ municipioId: string }> };
 
 const ZONA_LABELS: Record<string, string> = { RURAL: 'Rural', URBANA: 'Urbana', RURAL_URBANA: 'Rural / Urbana', URBANA_RURAL: 'Urbana / Rural' };
@@ -91,7 +91,13 @@ export default function PIInstitucionesPage(props: RouteParams) {
                 )}
               </div>
               <div style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: PI.darkAmber, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Ver registros →</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.2rem 0.6rem', borderRadius: '99px', fontWeight: 700, fontSize: '0.72rem',
+                  background: (i._count?.registros ?? 0) > 0 ? '#dcfce7' : '#fee2e2',
+                  color:      (i._count?.registros ?? 0) > 0 ? '#16a34a' : '#dc2626',
+                  border:     `1px solid ${(i._count?.registros ?? 0) > 0 ? '#86efac' : '#fca5a5'}`,
+                }}>
+                  {(i._count?.registros ?? 0) > 0 ? '✓ Con Registro' : '✗ Sin Registro'}
+                </span>
                 <div style={{ display: 'flex', gap: '0.4rem' }}>
                   <button className="btn" style={{ background: `${PI.amber}22`, color: PI.rust, border: `1px solid ${PI.amber}66`, fontSize: '0.7rem', padding: '0.2rem 0.5rem' }} onClick={(e) => openEditInst(e, i)}>Editar</button>
                   <button className="btn" style={{ background: '#fee2e2', color: '#dc2626', fontSize: '0.7rem', padding: '0.2rem 0.5rem' }} onClick={(e) => deleteInst(e, i.id)}>Eliminar</button>
