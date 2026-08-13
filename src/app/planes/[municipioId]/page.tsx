@@ -7,6 +7,7 @@ type InstitucionWithCount = {
   id: number;
   nombre: string;
   tipoInstitucion?: string;
+  esIndigena?: boolean;
   _count: { actas: number; planes: number };
 };
 
@@ -41,6 +42,7 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
   const [editingInst, setEditingInst] = useState<InstitucionWithCount | null>(null);
   const [instNombre, setInstNombre] = useState('');
   const [instZona, setInstZona] = useState('URBANA');
+  const [instEsIndigena, setInstEsIndigena] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const fetchData = () => {
@@ -67,7 +69,7 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: instNombre, municipioId: Number(municipioId), tipoInstitucion: instZona })
+      body: JSON.stringify({ nombre: instNombre, municipioId: Number(municipioId), tipoInstitucion: instZona, esIndigena: instEsIndigena })
     });
     setSaving(false);
     setIsInstModalOpen(false);
@@ -78,6 +80,7 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
     setEditingInst(null);
     setInstNombre('');
     setInstZona('URBANA');
+    setInstEsIndigena(false);
     setIsInstModalOpen(true);
   };
 
@@ -86,6 +89,7 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
     setEditingInst(i);
     setInstNombre(i.nombre);
     setInstZona(i.tipoInstitucion || 'URBANA');
+    setInstEsIndigena(i.esIndigena || false);
     setIsInstModalOpen(true);
   };
 
@@ -127,11 +131,18 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '1rem', marginBottom: '0.5rem' }}>
                 <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0, flex: 1 }}>{i.nombre}</h3>
-                {i.tipoInstitucion && (
-                  <span style={{ marginLeft: '0.5rem', padding: '0.15rem 0.5rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', background: ZONA_BG[i.tipoInstitucion] ?? '#f1f5f9', color: ZONA_COLOR[i.tipoInstitucion] ?? '#475569' }}>
-                    {ZONA_LABELS[i.tipoInstitucion] ?? i.tipoInstitucion}
-                  </span>
-                )}
+                <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {i.esIndigena && (
+                    <span style={{ padding: '0.15rem 0.5rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', background: '#fef2e2', color: '#c2410c' }}>
+                      Indígena
+                    </span>
+                  )}
+                  {i.tipoInstitucion && (
+                    <span style={{ padding: '0.15rem 0.5rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', background: ZONA_BG[i.tipoInstitucion] ?? '#f1f5f9', color: ZONA_COLOR[i.tipoInstitucion] ?? '#475569' }}>
+                      {ZONA_LABELS[i.tipoInstitucion] ?? i.tipoInstitucion}
+                    </span>
+                  )}
+                </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <ProgressBar
@@ -168,6 +179,15 @@ export default function PlanesInstitucionesPage(props: RouteParams) {
               <option value="RURAL_URBANA">Rural / Urbana</option>
               <option value="URBANA_RURAL">Urbana / Rural</option>
             </select>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              id="esIndigena"
+              checked={instEsIndigena}
+              onChange={e => setInstEsIndigena(e.target.checked)}
+            />
+            <label htmlFor="esIndigena" style={{ fontWeight: 500 }}>¿Institución indígena?</label>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
             <button type="button" className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsInstModalOpen(false)}>Cancelar</button>
