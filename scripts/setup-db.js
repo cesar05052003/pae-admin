@@ -395,6 +395,12 @@ async function main() {
 
   const result = await prisma.$executeRawUnsafe(sql);
   console.log(`Zones assigned: ${result} rows updated`);
+
+  // 4. Add esIndigena column to Institucion (marks indigenous institutions in Planes module)
+  await prisma.$executeRawUnsafe(
+    `ALTER TABLE "Institucion" ADD COLUMN IF NOT EXISTS "esIndigena" BOOLEAN NOT NULL DEFAULT false`
+  );
+  console.log('esIndigena column: OK');
 }
 
 main()

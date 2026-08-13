@@ -27,6 +27,7 @@ export async function PUT(request: Request, props: RouteParams) {
     const nombre = String(json.nombre || '').trim();
     const municipioId = json.municipioId ? Number(json.municipioId) : undefined;
     const tipoInstitucion = json.tipoInstitucion || undefined;
+    const esIndigena = json.esIndigena !== undefined ? Boolean(json.esIndigena) : undefined;
 
     if (tipoInstitucion && !['RURAL', 'URBANA', 'RURAL_URBANA', 'URBANA_RURAL'].includes(tipoInstitucion)) {
       return NextResponse.json({ error: 'Tipo de institución inválido' }, { status: 400 });
@@ -35,6 +36,9 @@ export async function PUT(request: Request, props: RouteParams) {
     const updateData: any = { nombre, municipioId };
     if (tipoInstitucion) {
       updateData.tipoInstitucion = tipoInstitucion;
+    }
+    if (esIndigena !== undefined) {
+      updateData.esIndigena = esIndigena;
     }
 
     const institucion = await prisma.institucion.update({

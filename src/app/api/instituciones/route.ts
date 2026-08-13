@@ -34,6 +34,7 @@ export async function POST(request: Request) {
     const nombre = String(json.nombre || '').trim();
     const municipioId = Number(json.municipioId);
     const tipoInstitucion = json.tipoInstitucion || 'URBANA';
+    const esIndigena = Boolean(json.esIndigena);
 
     if (!nombre || !municipioId) {
       return NextResponse.json({ error: 'Nombre y municipio son requeridos' }, { status: 400 });
@@ -48,6 +49,7 @@ export async function POST(request: Request) {
         nombre,
         municipioId,
         tipoInstitucion,
+        esIndigena,
       },
     });
 
