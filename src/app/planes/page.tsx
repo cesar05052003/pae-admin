@@ -126,6 +126,7 @@ export default function PlanesMunicipiosPage() {
           <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => setIsImportModalOpen(true)}>Importar Excel Global (Planes)</button>
           <button className="btn" style={{ background: 'var(--success-color)', color: 'white' }} onClick={openCreateMuni}>+ Nuevo Municipio</button>
           <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => router.push('/planes/seguimiento-excel')}>Ver Seguimiento Excel</button>
+          <button className="btn" style={{ background: '#e2e8f0' }} onClick={() => router.push('/informe-sin-planes')}>Informe Sin Planes</button>
           <button className="btn btn-primary" onClick={() => router.push('/estadisticas/planes')}>Ver Estadísticas</button>
         </div>
       </div>

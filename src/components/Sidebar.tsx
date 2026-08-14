@@ -15,6 +15,7 @@ export default function Sidebar() {
     { label: 'Planes Pedagógicos', href: '/planes' },
     { label: 'Anotaciones', href: '/anotaciones' },
     { label: 'Informe Sin CAE', href: '/informe-sin-cae' },
+    { label: 'Informe Sin Planes', href: '/informe-sin-planes' },
   ];
 
   return (
